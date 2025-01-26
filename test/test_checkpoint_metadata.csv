@@ -1,0 +1,8 @@
+index,file_path,class_label
+1,test_dataset/class1/image1_1.jpg,0
+2,test_dataset/class1/image1_2.jpg,0
+3,test_dataset/class1/image1_3.jpg,0
+4,test_dataset/class1/image1_4.jpg,0
+5,test_dataset/class2/image2_0.jpg,1
+6,test_dataset/class2/image2_1.jpg,1
+7,test_dataset/class2/image2_2.jpg,1
