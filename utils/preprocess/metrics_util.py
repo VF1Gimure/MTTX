@@ -20,9 +20,9 @@ def calculate_noise(img_path):
         return None
 
 
-def batch_sharpness(dataframe, dataset, save_dir, name, batch_size=32, num_workers=4):
+def batch_sharpness(dataframe, dataset, save_dir, file, batch_size=32, num_workers=4):
     os.makedirs(save_dir, exist_ok=True)
-    save_file = os.path.join(save_dir, f"{name}_metrics.pkl")
+    save_file = os.path.join(save_dir, file)
 
     metrics = []
     total_samples = len(dataset.samples)
@@ -51,9 +51,10 @@ def calculate_flattened_image_metrics(flattened_img):
     return {"brightness": brightness, "contrast": contrast, "entropy": entropy}
 
 
-def batch_calculate_image_metrics(flattened_df, name, save_dir, batch_size=32, num_workers=4):
+def batch_calculate_image_metrics(flattened_df, save_dir, file='_metrics.pkl', batch_size=32, num_workers=4,):
     os.makedirs(save_dir, exist_ok=True)
-    save_file = os.path.join(save_dir, f"{name}_metrics.pkl")
+
+    save_file = os.path.join(save_dir, file)
 
     data = []
     total_samples = len(flattened_df)

@@ -11,8 +11,8 @@ class DataframeTorchImageFolder:
         self.dataset_dir = dataset_dir
         self.save_dir = os.getcwd()
         self.data_transforms = data_transforms
-        self.imagefolder_dataset = self._load_dataset()
-        self.class_to_idx = self.imagefolder_dataset.class_to_idx
+        self.if_dataset = self._load_dataset()
+        self.class_to_idx = self.if_dataset.class_to_idx
         self.df = self._create_dataframe()
         self.deleted_images = pd.DataFrame(columns=self.df.columns)
 
@@ -21,17 +21,17 @@ class DataframeTorchImageFolder:
 
     def _create_dataframe(self):
         data = []
-        for idx, (path, label) in enumerate(self.imagefolder_dataset.samples):
+        for idx, (path, label) in enumerate(self.if_dataset.samples):
             data.append({"index": idx, "img_path": path, "class": label})
         return pd.DataFrame(data)
 
     def load_keep_transform(self, data_transforms=None):
         self.data_transforms = data_transforms
-        self.imagefolder_dataset = self._load_dataset()
+        self.if_dataset = self._load_dataset()
         valid_file_paths = set(self.df["img_path"])
-        self.imagefolder_dataset.samples = [sample for sample in self.imagefolder_dataset.samples if
-                                            sample[0] in valid_file_paths]
-        self.imagefolder_dataset.targets = [label for _, label in self.imagefolder_dataset.samples]
+        self.if_dataset.samples = [sample for sample in self.if_dataset.samples if
+                                   sample[0] in valid_file_paths]
+        self.if_dataset.targets = [label for _, label in self.if_dataset.samples]
 
     def pop(self, index):
         if index not in self.df.index:
@@ -42,14 +42,14 @@ class DataframeTorchImageFolder:
         self.df = self.df.drop(index).reset_index(drop=True)
 
         file_path_to_remove = popped_row["img_path"]
-        self.imagefolder_dataset.samples = [
+        self.if_dataset.samples = [
             sample for sample
-            in self.imagefolder_dataset.samples
+            in self.if_dataset.samples
             if sample[0] != file_path_to_remove]
 
-        self.imagefolder_dataset.targets = [
+        self.if_dataset.targets = [
             label for _, label
-            in self.imagefolder_dataset.samples]
+            in self.if_dataset.samples]
 
     def batch_pop(self, indices):
         if isinstance(indices, int):
@@ -65,10 +65,10 @@ class DataframeTorchImageFolder:
         self.df = self.df.drop(indices).reset_index(drop=True)
 
         valid_file_paths = set(self.df["img_path"])
-        self.imagefolder_dataset.samples = [
-            sample for sample in self.imagefolder_dataset.samples if sample[0] in valid_file_paths
+        self.if_dataset.samples = [
+            sample for sample in self.if_dataset.samples if sample[0] in valid_file_paths
         ]
-        self.imagefolder_dataset.targets = [label for _, label in self.imagefolder_dataset.samples]
+        self.if_dataset.targets = [label for _, label in self.if_dataset.samples]
 
     def save(self, name):
         if not self.save_dir:
@@ -105,7 +105,7 @@ class DataframeTorchImageFolder:
         for _, row in self.df.iterrows():
             file_path = row["img_path"]
             class_label = row["class"]
-            class_dir = os.path.join(clean_imagefolder_dir, self.imagefolder_dataset.classes[class_label])
+            class_dir = os.path.join(clean_imagefolder_dir, self.if_dataset.classes[class_label])
             os.makedirs(class_dir, exist_ok=True)
 
             dest_path = os.path.join(class_dir, os.path.basename(file_path))
@@ -145,7 +145,7 @@ class DataframeTorchImageFolder:
         instance.data_transforms = data_transforms
         instance.df = df
         instance.deleted_images = deleted_images
-        instance.imagefolder_dataset = None  # Needs to be reloaded using load_and_keep_state_new_transform
+        instance.if_dataset = None  # Needs to be reloaded using load_and_keep_state_new_transform
         instance.load_keep_transform(data_transforms)
 
         return instance

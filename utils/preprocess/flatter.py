@@ -24,10 +24,9 @@ def process_image_flat(args):
         return None
 
 
-def batch_flatten_img(dataset, save_dir, batch_size=32, num_workers=4):
+def batch_flatten_img(dataset, save_dir, file='_flatten.pkl', batch_size=32, num_workers=4):
     os.makedirs(save_dir, exist_ok=True)
-    dataset_name = os.path.basename(os.path.normpath(dataset.root))
-    save_file = os.path.join(save_dir, f"{dataset_name}_flatten.pkl")
+    save_file = os.path.join(save_dir, file)
 
     data = []
     total_samples = len(dataset.samples)
