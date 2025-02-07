@@ -4,11 +4,12 @@ import sys
 import pandas as pd
 import torch
 from torchvision import datasets, transforms
-from Pipelines.utils.transformers_setup import clahe_unsharp_t
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+from pipelines.utils.transformers_setup import clahe_unsharp_t
+
 
 def load_data_image_folder(dataset_path, transformer, num_workers):
     i_dataset = datasets.ImageFolder(dataset_path, transform=transformer)
@@ -42,5 +43,6 @@ if __name__ == "__main__":
 
     #loaded_data = load_data_image_folder(data_path, default_transform,num_workers)
     print(f"[INFO] Processed tensors and metadata saved to {output_file}")
+    empty_data = {"tensors": [], "labels": [], "file_paths": []}
 
-    #torch.save(loaded_data, output_file)
+    torch.save(empty_data, output_file)

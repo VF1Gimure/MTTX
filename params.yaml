@@ -1,0 +1,4 @@
+data:
+  image_folder_path: "data/raw/KnightX_exp_dataset"
+  processed: "data/processed/train_data.pt"
+  models: "data/models"

@@ -1,0 +1,23 @@
+schema: '2.0'
+stages:
+  load_data:
+    cmd: python pipelines/src/load_data.py data/raw/KnightX_exp_dataset data/processed/train_data.pt
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 85a754daf6d545eea6579741581f4dde.dir
+      size: 1169603990
+      nfiles: 5006
+    - path: pipelines/src/load_data.py
+      hash: md5
+      md5: 584d24811d59a25b5ff7b34eb61ce9d2
+      size: 1682
+    - path: pipelines/utils/transformers_setup.py
+      hash: md5
+      md5: b4eee6d54525b20f76c5136b2cd21a31
+      size: 565
+    outs:
+    - path: data/processed/train_data.pt
+      hash: md5
+      md5: 02f4978f91dd9622ba376ea752efe52f
+      size: 940
