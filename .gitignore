@@ -24,7 +24,7 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+_notebooks_copy/
 # Virtual environments
 venv/
 ENV/
