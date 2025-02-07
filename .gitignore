@@ -1,0 +1,90 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+env.bak/
+venv.bak/
+*.virtualenv
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# VSCode, PyCharm, and other IDE-specific settings
+.vscode/
+.idea/
+
+# Logs and other temporary files
+*.log
+*.out
+*.err
+*.pid
+*.dat
+
+# Caches
+*.cache
+.cache/
+
+
+# HDF5 files
+*.hdf5
+
+# Environment variables
+.env
+
+# Other machine learning or data science related files
+*.weights
+*.index
+*.tflite
+*.tensorboard
+*.pb
+
+# Local test reports
+coverage/
+*.cover
+*.coverage
+*.lcov
+nosetests.xml
+coverage.xml
+*.coveragerc
+
+# PyTest cache
+.pytest_cache/
+
+# DS Store
+.DS_Store
+
+
+# Configurable
+models/*
+mlruns/
+*.txt
+*.zip
+
