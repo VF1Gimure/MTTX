@@ -5,7 +5,7 @@ from utils.capture.frame_processor_thread import FrameProcessorThread
 import cv2
 from facenet_pytorch import MTCNN
 import numpy as np
-from utils.capture.DatasetSaver import DatasetSaver
+from utils.capture.DatasetSaver import DatasetSaver_frames
 
 display_fps = 0
 processing_fps = 0
@@ -56,7 +56,7 @@ def process_frame(webcam, processor, dataset_saver):
 def main():
     """Main execution loop."""
     detector, webcam, processor = initialize_system()
-    dataset_saver = DatasetSaver(category="surprise", max_duration=5)
+    dataset_saver = DatasetSaver_frames(category="surprise", max_frames=300)
 
     try:
         while not dataset_saver.stop_flag:
