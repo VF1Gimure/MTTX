@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 from PIL import Image
 
-
 class CLAHEBaseTransform:
     def __init__(self, clip_limit=2.0, tile_grid_size=(8, 8)):
         self.clip_limit = clip_limit

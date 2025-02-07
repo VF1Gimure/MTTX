@@ -1,0 +1,9 @@
+stages:
+  load_data:
+    cmd: python pipelines/src/load_data.py ${data.image_folder_path} ${data.processed}
+    deps:
+      - src/load_data.py
+      - data/raw
+      - data/transformers/transformers_setup.py
+    outs:
+      - output/processed_data.csv

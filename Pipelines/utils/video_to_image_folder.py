@@ -72,6 +72,6 @@ def process_videos_in_directory(directory_path, split_index=None):
 
 
 if __name__ == "__main__":
-    directory_path = "/Users/lsfu/Desktop/MNA/Integrador/MTTX/data/esni_emotions"
-    split_index = 1 # None 
+    directory_path = "/data/kxed_copy/esni_emotions"
+    split_index = 1 # None
     process_videos_in_directory(directory_path, split_index)
