@@ -5,6 +5,14 @@ from matplotlib import pyplot as plt
 import random
 
 from mpl_toolkits.mplot3d import Axes3D
+import torch
+import numpy as np
+import math
+
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 
 def plot_random_images(data_dir, images_df, title, sample=5):
     # Select 10 random images
@@ -149,3 +157,265 @@ def plot_landmarks_3d(landmarks_3d, title="Landmarks 3D"):
 # Suponiendo que landmarks_3d es el resultado de transform_landmarks_to_3d()
 # landmarks_3d = transform_landmarks_to_3d(landmarks_2d, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
 # plot_landmarks_3d(landmarks_3d
+
+def visualize_2_channel_image(data, label_map, idx=0):
+    """
+    Visualizes a 2-channel tensor image (grayscale + landmark heatmap)
+    and prints the category label.
+
+    Args:
+        data (dict): Dataset containing idxs, tensors, and labels.
+        label_map (dict): Dictionary mapping labels to categories.
+        idx (int): Index of the image to visualize.
+    """
+    tensor = data["tensors"][idx]
+    label = data["labels"][idx]
+
+    # Extract the grayscale face (channel 0) and landmark heatmap (channel 1)
+    face = tensor[0].cpu().numpy()
+    heatmap = tensor[1].cpu().numpy()
+
+    # Display grayscale face
+    plt.figure(figsize=(10, 5))
+    plt.subplot(1, 2, 1)
+    plt.imshow(face, cmap="gray")
+    plt.title(f"Face - Category: {label_map[label]}")
+    plt.axis("off")
+
+    # Overlay heatmap
+    plt.subplot(1, 2, 2)
+    plt.imshow(face, cmap="gray")
+    plt.imshow(heatmap, cmap="hot", alpha=0.6)  # Blend heatmap with the face
+    plt.title("Landmark Heatmap Overlay")
+    plt.axis("off")
+
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_all_class_cm(cm, class_labels=None, per_row=3):
+    num_classes = cm.shape[0]
+
+    if class_labels is None:
+        class_labels = [f"Class {i}" for i in range(num_classes)]
+
+    # Define grid layout
+    cols = per_row
+    rows = math.ceil(num_classes / cols)  # Automatically determine number of rows
+
+    fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 5))  # Adjust figure size
+    axes = axes.flatten()  # Flatten in case of uneven grids
+
+    for class_idx in range(num_classes):
+        ax = axes[class_idx]
+
+        # Normalize confusion matrix rows to percentages
+        cm_percent = cm.astype('float') / cm.sum(axis=1, keepdims=True) * 100
+
+        # Create cell labels (only for TP, FN, FP)
+        cell_labels = np.full((num_classes, num_classes), "", dtype=object)  # Empty by default
+        cell_colors = np.empty((num_classes, num_classes), dtype=object)
+
+        for i in range(num_classes):
+            for j in range(num_classes):
+                count = cm[i, j]
+                percent = cm_percent[i, j]
+                if i == class_idx and j == class_idx:  # True Positives
+                    cell_labels[i, j] = f"TP\n{count}\n{percent:.1f}%"
+                    color = "lightblue"
+                elif i == class_idx:  # False Negatives
+                    cell_labels[i, j] = f"FN\n{count}\n{percent:.1f}%"
+                    color = "lightgreen"
+                elif j == class_idx:  # False Positives
+                    cell_labels[i, j] = f"FP\n{count}\n{percent:.1f}%"
+                    color = "lightcoral"
+                else:  # True Negatives
+                    cell_labels[i, j] = f"TN\n{count}"
+                    color = "beige"
+
+                cell_colors[i, j] = color
+
+        # Plot the confusion matrix
+        sns.heatmap(
+            cm_percent, annot=cell_labels, fmt='', cmap="Pastel1",
+            xticklabels=class_labels, yticklabels=class_labels,
+            cbar=False, ax=ax
+        )
+
+        # Apply custom cell colors
+        for i in range(num_classes):
+            for j in range(num_classes):
+                ax.add_patch(plt.Rectangle(
+                    (j, i), 1, 1, facecolor=cell_colors[i, j], edgecolor='black', lw=0.5
+                ))
+
+        # Add bounding boxes for the highlighted class
+        for i in range(num_classes):
+            for j in range(num_classes):
+                if i == class_idx and j == class_idx:  # True Positive
+                    ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='blue', lw=1.5, linestyle='dashed'))
+                elif i == class_idx:  # False Negative
+                    ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='green', lw=1, linestyle='dashed'))
+                elif j == class_idx:  # False Positive
+                    ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='red', lw=1, linestyle='dashed'))
+
+        ax.set_xlabel("Predicted")
+        ax.set_ylabel("Actual")
+        ax.set_title(f"CM: {class_labels[class_idx]}")
+
+    # Hide any unused subplots
+    for i in range(num_classes, len(axes)):
+        fig.delaxes(axes[i])
+
+    plt.tight_layout()
+    plt.show()
+
+
+def highlight_class_cm(cm, class_idx, class_labels=None):
+    num_classes = cm.shape[0]
+
+    if class_labels is None:
+        class_labels = [f"Class {i}" for i in range(num_classes)]
+
+    # Normalize confusion matrix rows to percentages
+    cm_percent = cm.astype('float') / cm.sum(axis=1, keepdims=True) * 100
+
+    # Create cell labels and define colors
+    cell_labels = []
+    cell_colors = np.empty((num_classes, num_classes), dtype=object)
+    for i in range(num_classes):
+        row_labels = []
+        for j in range(num_classes):
+            count = cm[i, j]
+            percent = cm_percent[i, j]
+            if i == class_idx and j == class_idx:  # True Positives
+                label = f"TP\n{count}\n{percent:.1f}%"
+                color = "lightblue"
+            elif i == class_idx:  # False Negatives
+                label = f"FN\n{count}\n{percent:.1f}%"
+                color = "lightgreen"
+            elif j == class_idx:  # False Positives
+                label = f"FP\n{count}\n{percent:.1f}%"
+                color = "lightcoral"
+            else:  # True Negatives
+                label = f"TN\n{count}\n{percent:.1f}%"
+                color = "beige"
+
+            row_labels.append(label)
+            cell_colors[i, j] = color
+        cell_labels.append(row_labels)
+
+    # Plot the confusion matrix with heatmap
+    plt.figure(figsize=(8, 8))
+    ax = sns.heatmap(
+        cm_percent,
+        annot=np.array(cell_labels),
+        fmt='',
+        cmap="Pastel1",
+        xticklabels=class_labels,
+        yticklabels=class_labels,
+        cbar=False
+    )
+
+    # Apply custom cell colors
+    for i in range(num_classes):
+        for j in range(num_classes):
+            ax.add_patch(plt.Rectangle(
+                (j, i), 1, 1, facecolor=cell_colors[i, j], edgecolor='black', lw=0.5
+            ))
+
+    # Add bounding boxes for the highlighted class
+    for i in range(num_classes):
+        for j in range(num_classes):
+            if i == class_idx and j == class_idx:  # True Positive
+                ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='blue', lw=1.5, linestyle='dashed'))
+            elif i == class_idx:  # False Negative
+                ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='green', lw=1, linestyle='dashed'))
+            elif j == class_idx:  # False Positive
+                ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='red', lw=1, linestyle='dashed'))
+
+    ax.set_xlabel("Predicted Class")
+    ax.set_ylabel("Actual Class")
+    ax.set_title(f"Confusion Matrix Highlight for Class {class_labels[class_idx]}")
+    plt.show()
+
+
+import math
+
+
+def plot_all_class_cm(cm, class_labels=None, per_row=3):
+    num_classes = cm.shape[0]
+
+    if class_labels is None:
+        class_labels = [f"Class {i}" for i in range(num_classes)]
+
+    # Define grid layout
+    cols = per_row
+    rows = math.ceil(num_classes / cols)  # Automatically determine number of rows
+
+    fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 5))  # Adjust figure size
+    axes = axes.flatten()  # Flatten in case of uneven grids
+
+    for class_idx in range(num_classes):
+        ax = axes[class_idx]
+
+        # Normalize confusion matrix rows to percentages
+        cm_percent = cm.astype('float') / cm.sum(axis=1, keepdims=True) * 100
+
+        # Create cell labels (only for TP, FN, FP)
+        cell_labels = np.full((num_classes, num_classes), "", dtype=object)  # Empty by default
+        cell_colors = np.empty((num_classes, num_classes), dtype=object)
+
+        for i in range(num_classes):
+            for j in range(num_classes):
+                count = cm[i, j]
+                percent = cm_percent[i, j]
+                if i == class_idx and j == class_idx:  # True Positives
+                    cell_labels[i, j] = f"TP\n{count}\n{percent:.1f}%"
+                    color = "lightblue"
+                elif i == class_idx:  # False Negatives
+                    cell_labels[i, j] = f"FN\n{count}\n{percent:.1f}%"
+                    color = "lightgreen"
+                elif j == class_idx:  # False Positives
+                    cell_labels[i, j] = f"FP\n{count}\n{percent:.1f}%"
+                    color = "lightcoral"
+                else:  # True Negatives
+                    cell_labels[i, j] = f"TN\n{count}"
+                    color = "beige"
+
+                cell_colors[i, j] = color
+
+        # Plot the confusion matrix
+        sns.heatmap(
+            cm_percent, annot=cell_labels, fmt='', cmap="Pastel1",
+            xticklabels=class_labels, yticklabels=class_labels,
+            cbar=False, ax=ax
+        )
+
+        # Apply custom cell colors
+        for i in range(num_classes):
+            for j in range(num_classes):
+                ax.add_patch(plt.Rectangle(
+                    (j, i), 1, 1, facecolor=cell_colors[i, j], edgecolor='black', lw=0.5
+                ))
+
+        # Add bounding boxes for the highlighted class
+        for i in range(num_classes):
+            for j in range(num_classes):
+                if i == class_idx and j == class_idx:  # True Positive
+                    ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='blue', lw=1.5, linestyle='dashed'))
+                elif i == class_idx:  # False Negative
+                    ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='green', lw=1, linestyle='dashed'))
+                elif j == class_idx:  # False Positive
+                    ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='red', lw=1, linestyle='dashed'))
+
+        ax.set_xlabel("Predicted")
+        ax.set_ylabel("Actual")
+        ax.set_title(f"CM: {class_labels[class_idx]}")
+
+    # Hide any unused subplots
+    for i in range(num_classes, len(axes)):
+        fig.delaxes(axes[i])
+
+    plt.tight_layout()
+    plt.show()
