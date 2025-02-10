@@ -9,28 +9,7 @@ from tqdm import tqdm
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from pipelines.utils.transformers_setup import clahe_unsharp_t
-
-
-def load_data_image_folder(dataset_path, transformer, num_workers):
-    i_dataset = datasets.ImageFolder(dataset_path, transform=transformer)
-
-    # Extract data in parallel using ThreadPoolExecutor
-    with ThreadPoolExecutor(max_workers=num_workers) as executor:
-        results = list(tqdm(
-            executor.map(lambda idx: (i_dataset[idx][0], i_dataset[idx][1], i_dataset.imgs[idx][0]),
-                         range(len(i_dataset))),
-            total=len(i_dataset),
-            desc="Extracting Tensors, Targets, and File Paths..."
-        ))
-
-    # Unpack results into separate lists
-    tensors, labels, file_paths = zip(*results)
-
-    return {
-        "tensors": torch.stack(tensors),  # Stack tensors into a single tensor batch
-        "labels": torch.tensor(labels),  # Convert labels to tensor
-        "file_paths": list(file_paths)  # Keep file paths as a list
-    }
+from pipelines.utils.data_utils import load_data_image_folder
 
 
 if __name__ == "__main__":
@@ -38,11 +17,8 @@ if __name__ == "__main__":
     output_file = sys.argv[2]
     num_workers = os.cpu_count()
 
-    default_transform = clahe_unsharp_t()
-    print(f"[INFO] Data TO LOAD{data_path}")
+    default_transform = clahe_unsharp_t() #TODO: This needs to be LOADED
 
-    #loaded_data = load_data_image_folder(data_path, default_transform,num_workers)
-    print(f"[INFO] Processed tensors and metadata saved to {output_file}")
-    empty_data = {"tensors": [], "labels": [], "file_paths": []}
+    loaded_data = load_data_image_folder(data_path, default_transform,num_workers)
 
-    torch.save(empty_data, output_file)
+    torch.save(loaded_data, output_file)
