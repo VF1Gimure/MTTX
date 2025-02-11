@@ -61,15 +61,16 @@ stages:
       - ${data.dlib68}
     outs:
       - ${data.processed}/train_data_landmarked.pt
-
   preprocess.crop_resize_convert:
-    cmd: python pipelines/src/preprocess.py train_data_landmarked.pt train_data_2channel_train.pt train_data_2channel_test.pt
+    cmd: python pipelines/src/preprocess.py train_data_landmarked.pt train_data_2channel_train.pt train_data_2channel_test.pt train_data_3channel_train.pt train_data_3channel_test.pt
     deps:
       - pipelines/src/preprocess.py
       - ${data.processed}/train_data_landmarked.pt
     outs:
       - ${data.processed}/train_data_2channel_train.pt
       - ${data.processed}/train_data_2channel_test.pt
+      - ${data.processed}/train_data_3channel_train.pt
+      - ${data.processed}/train_data_3channel_test.pt
 
   train:
     cmd: python pipelines/src/train.py train_data_2channel_train.pt model.pth
@@ -78,6 +79,46 @@ stages:
       - ${data.processed}/train_data_2channel_train.pt
     outs:
       - ${data.models}/model.pth
+
+  train_vgg16:
+    cmd: python pipelines/src/train_vgg.py train_data_3channel_train.pt vgg16.pth
+    deps:
+      - pipelines/src/train_vgg.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/vgg16.pth
+
+  train_resnet:
+    cmd: python pipelines/src/train_resnet.py train_data_3channel_train.pt resnet18.pth
+    deps:
+      - pipelines/src/train_resnet.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/resnet18.pth
+
+  train_vit:
+    cmd: python pipelines/src/train_vit.py train_data_3channel_train.pt vit.pth
+    deps:
+      - pipelines/src/train_vit.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/vit.pth
+
+  train_efficientnet:
+    cmd: python pipelines/src/train_efficientnet.py train_data_3channel_train.pt efficientnet.pth
+    deps:
+      - pipelines/src/train_efficientnet.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/efficientnet.pth
+
+  train_mobilenet:
+    cmd: python pipelines/src/train_mobilenet.py train_data_3channel_train.pt mobilenet.pth
+    deps:
+      - pipelines/src/train_mobilenet.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/mobilenet.pth
 
   evaluate:
     cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt model.pth metrics.csv conf_matrix.pkl
@@ -88,3 +129,53 @@ stages:
     outs:
       - ${data.processed}/metrics.csv
       - ${data.processed}/conf_matrix.pkl
+
+  evaluate_vgg16:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vgg16.pth metrics_vgg16.csv conf_matrix_vgg16.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/vgg16.pth
+    outs:
+      - ${data.processed}/metrics_vgg16.csv
+      - ${data.processed}/conf_matrix_vgg16.pkl
+
+  evaluate_resnet:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth metrics_resnet.csv conf_matrix_resnet.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/resnet18.pth
+    outs:
+      - ${data.processed}/metrics_resnet.csv
+      - ${data.processed}/conf_matrix_resnet.pkl
+
+  evaluate_vit:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vit.pth metrics_vit.csv conf_matrix_vit.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/vit.pth
+    outs:
+      - ${data.processed}/metrics_vit.csv
+      - ${data.processed}/conf_matrix_vit.pkl
+
+  evaluate_efficientnet:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt efficientnet.pth metrics_efficientnet.csv conf_matrix_efficientnet.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/efficientnet.pth
+    outs:
+      - ${data.processed}/metrics_efficientnet.csv
+      - ${data.processed}/conf_matrix_efficientnet.pkl
+
+  evaluate_mobilenet:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt mobilenet.pth metrics_mobilenet.csv conf_matrix_mobilenet.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/mobilenet.pth
+    outs:
+      - ${data.processed}/metrics_mobilenet.csv
+      - ${data.processed}/conf_matrix_mobilenet.pkl

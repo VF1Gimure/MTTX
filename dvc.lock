@@ -169,7 +169,7 @@ stages:
       size: 3822071362
   preprocess.crop_resize_convert:
     cmd: python pipelines/src/preprocess.py train_data_landmarked.pt train_data_2channel_train.pt
-      train_data_2channel_test.pt
+      train_data_2channel_test.pt train_data_3channel_train.pt train_data_3channel_test.pt
     deps:
     - path: data/processed/train_data_landmarked.pt
       hash: md5
@@ -177,55 +177,268 @@ stages:
       size: 3822071362
     - path: pipelines/src/preprocess.py
       hash: md5
-      md5: c0032971e7f72fbdac3866cf87a0d459
-      size: 1994
+      md5: 74ec46c71ec37cd2e5ffd71767f38802
+      size: 3293
     outs:
     - path: data/processed/train_data_2channel_test.pt
       hash: md5
-      md5: f07a3a0f40a0cc14394447c7aab000c6
-      size: 350274303
+      md5: cf583befd4f970dd82c936989c92a884
+      size: 67084223
     - path: data/processed/train_data_2channel_train.pt
       hash: md5
-      md5: 83e9b1d6b0ed96b4c90922a5786fe856
-      size: 1398999978
+      md5: 23476c00da28709c76137423c1a93ac6
+      size: 267935402
+    - path: data/processed/train_data_3channel_test.pt
+      hash: md5
+      md5: 7565ee1089643a12568efd5b59ffc028
+      size: 100601791
+    - path: data/processed/train_data_3channel_train.pt
+      hash: md5
+      md5: a3c4c62ecdcc6e8086e55e5c2ff08af5
+      size: 401804970
   train:
     cmd: python pipelines/src/train.py train_data_2channel_train.pt model.pth
     deps:
     - path: data/processed/train_data_2channel_train.pt
       hash: md5
-      md5: 83e9b1d6b0ed96b4c90922a5786fe856
-      size: 1398999978
+      md5: 23476c00da28709c76137423c1a93ac6
+      size: 267935402
     - path: pipelines/src/train.py
       hash: md5
-      md5: 0e6a0bc872b6654d0c0624cbe1579c17
-      size: 1755
+      md5: 62af64e2091b5bb43b1526e414b995ec
+      size: 1656
     outs:
     - path: data/model/runs/model.pth
       hash: md5
-      md5: 5fe2a5650dca890ebe93a010dc26f2e6
-      size: 33826168
+      md5: a9a5c8d62bb34dc37918c65cb5329435
+      size: 6694392
   evaluate:
     cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt model.pth metrics.csv
       conf_matrix.pkl
     deps:
     - path: data/model/runs/model.pth
       hash: md5
-      md5: 5fe2a5650dca890ebe93a010dc26f2e6
-      size: 33826168
+      md5: a9a5c8d62bb34dc37918c65cb5329435
+      size: 6694392
     - path: data/processed/train_data_2channel_test.pt
       hash: md5
-      md5: f07a3a0f40a0cc14394447c7aab000c6
-      size: 350274303
+      md5: cf583befd4f970dd82c936989c92a884
+      size: 67084223
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: ea8fc7dc34cb40c853eede92c00609ab
-      size: 2867
+      md5: 0b6d3789102273802e65d570587e6588
+      size: 3683
     outs:
     - path: data/processed/conf_matrix.pkl
       hash: md5
-      md5: c1211347e83ebb3c3b493275b26578df
+      md5: 2d31ef48e6ab254069a12d05c592a25a
       size: 664
     - path: data/processed/metrics.csv
       hash: md5
-      md5: db5426b230cffd9f750788c01f47be79
-      size: 400
+      md5: ca9789e829f5f6f5dcce9e77b58780d0
+      size: 458
+  train_vgg16:
+    cmd: python pipelines/src/train_vgg.py train_data_3channel_train.pt vgg16.pth
+    deps:
+    - path: data/processed/train_data_3channel_train.pt
+      hash: md5
+      md5: a3c4c62ecdcc6e8086e55e5c2ff08af5
+      size: 401804970
+    - path: pipelines/src/train_vgg.py
+      hash: md5
+      md5: 0a5d1d70ea9701d94e43c76b07eba168
+      size: 1769
+    outs:
+    - path: data/model/runs/vgg16.pth
+      hash: md5
+      md5: 973ca09cdd7abaf31c6535c7e95a1eaa
+      size: 537182638
+  train_resnet:
+    cmd: python pipelines/src/train_resnet.py train_data_3channel_train.pt resnet18.pth
+    deps:
+    - path: data/processed/train_data_3channel_train.pt
+      hash: md5
+      md5: a3c4c62ecdcc6e8086e55e5c2ff08af5
+      size: 401804970
+    - path: pipelines/src/train_resnet.py
+      hash: md5
+      md5: c21362ca10a7634e9558c0357819c036
+      size: 1893
+    outs:
+    - path: data/model/runs/resnet18.pth
+      hash: md5
+      md5: 01b88ed4fbc1155c359d9f149856a065
+      size: 44801020
+  train_vit:
+    cmd: python pipelines/src/train_vit.py train_data_3channel_train.pt vit.pth
+    deps:
+    - path: data/processed/train_data_3channel_train.pt
+      hash: md5
+      md5: a3c4c62ecdcc6e8086e55e5c2ff08af5
+      size: 401804970
+    - path: pipelines/src/train_vit.py
+      hash: md5
+      md5: ecea2c86afa096485975ae238aba62dd
+      size: 1794
+    outs:
+    - path: data/model/runs/vit.pth
+      hash: md5
+      md5: 38927a2a8e6517ee118804195b87ec28
+      size: 343268370
+  train_efficientnet:
+    cmd: python pipelines/src/train_efficientnet.py train_data_3channel_train.pt efficientnet.pth
+    deps:
+    - path: data/processed/train_data_3channel_train.pt
+      hash: md5
+      md5: a3c4c62ecdcc6e8086e55e5c2ff08af5
+      size: 401804970
+    - path: pipelines/src/train_efficientnet.py
+      hash: md5
+      md5: ddaffbe500831d1157c2f94d3604afcb
+      size: 1798
+    outs:
+    - path: data/model/runs/efficientnet.pth
+      hash: md5
+      md5: 1f3a92500deb7593abdde2eb5e8f73d0
+      size: 16375038
+  train_mobilenet:
+    cmd: python pipelines/src/train_mobilenet.py train_data_3channel_train.pt mobilenet.pth
+    deps:
+    - path: data/processed/train_data_3channel_train.pt
+      hash: md5
+      md5: a3c4c62ecdcc6e8086e55e5c2ff08af5
+      size: 401804970
+    - path: pipelines/src/train_mobilenet.py
+      hash: md5
+      md5: 2fcfdc6e21bd27b3af42b25a61b19f7e
+      size: 1795
+    outs:
+    - path: data/model/runs/mobilenet.pth
+      hash: md5
+      md5: 0887856aa15d45d5cd53e8b0ade8a786
+      size: 9182266
+  evaluate_vgg16:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vgg16.pth metrics_vgg16.csv
+      conf_matrix_vgg16.pkl
+    deps:
+    - path: data/model/runs/vgg16.pth
+      hash: md5
+      md5: 973ca09cdd7abaf31c6535c7e95a1eaa
+      size: 537182638
+    - path: data/processed/train_data_3channel_test.pt
+      hash: md5
+      md5: 7565ee1089643a12568efd5b59ffc028
+      size: 100601791
+    - path: pipelines/src/evaluate.py
+      hash: md5
+      md5: 0b6d3789102273802e65d570587e6588
+      size: 3683
+    outs:
+    - path: data/processed/conf_matrix_vgg16.pkl
+      hash: md5
+      md5: 916442de553ffe48873220e962134332
+      size: 664
+    - path: data/processed/metrics_vgg16.csv
+      hash: md5
+      md5: fee45e032d9cba9f66f9d8d4f294bdb5
+      size: 459
+  evaluate_resnet:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth
+      metrics_resnet.csv conf_matrix_resnet.pkl
+    deps:
+    - path: data/model/runs/resnet18.pth
+      hash: md5
+      md5: 01b88ed4fbc1155c359d9f149856a065
+      size: 44801020
+    - path: data/processed/train_data_3channel_test.pt
+      hash: md5
+      md5: 7565ee1089643a12568efd5b59ffc028
+      size: 100601791
+    - path: pipelines/src/evaluate.py
+      hash: md5
+      md5: 0b6d3789102273802e65d570587e6588
+      size: 3683
+    outs:
+    - path: data/processed/conf_matrix_resnet.pkl
+      hash: md5
+      md5: 4612a1ba0568351cfdcd5d83ef07f20c
+      size: 664
+    - path: data/processed/metrics_resnet.csv
+      hash: md5
+      md5: f4fe2bc6b18b5ea84741685060a24d1e
+      size: 458
+  evaluate_vit:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vit.pth metrics_vit.csv
+      conf_matrix_vit.pkl
+    deps:
+    - path: data/model/runs/vit.pth
+      hash: md5
+      md5: 38927a2a8e6517ee118804195b87ec28
+      size: 343268370
+    - path: data/processed/train_data_3channel_test.pt
+      hash: md5
+      md5: 7565ee1089643a12568efd5b59ffc028
+      size: 100601791
+    - path: pipelines/src/evaluate.py
+      hash: md5
+      md5: 0b6d3789102273802e65d570587e6588
+      size: 3683
+    outs:
+    - path: data/processed/conf_matrix_vit.pkl
+      hash: md5
+      md5: e6ebb8fc1d3766245d259cda1f4617b1
+      size: 664
+    - path: data/processed/metrics_vit.csv
+      hash: md5
+      md5: befabe2ee907a943c4ee3b37cc3d12f9
+      size: 456
+  evaluate_efficientnet:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt efficientnet.pth
+      metrics_efficientnet.csv conf_matrix_efficientnet.pkl
+    deps:
+    - path: data/model/runs/efficientnet.pth
+      hash: md5
+      md5: 1f3a92500deb7593abdde2eb5e8f73d0
+      size: 16375038
+    - path: data/processed/train_data_3channel_test.pt
+      hash: md5
+      md5: 7565ee1089643a12568efd5b59ffc028
+      size: 100601791
+    - path: pipelines/src/evaluate.py
+      hash: md5
+      md5: 0b6d3789102273802e65d570587e6588
+      size: 3683
+    outs:
+    - path: data/processed/conf_matrix_efficientnet.pkl
+      hash: md5
+      md5: 49e6ff81c1b5750b50741db1858544fd
+      size: 664
+    - path: data/processed/metrics_efficientnet.csv
+      hash: md5
+      md5: 7075758fd1b0758e63b98ce1f11cd5b0
+      size: 456
+  evaluate_mobilenet:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt mobilenet.pth
+      metrics_mobilenet.csv conf_matrix_mobilenet.pkl
+    deps:
+    - path: data/model/runs/mobilenet.pth
+      hash: md5
+      md5: 0887856aa15d45d5cd53e8b0ade8a786
+      size: 9182266
+    - path: data/processed/train_data_3channel_test.pt
+      hash: md5
+      md5: 7565ee1089643a12568efd5b59ffc028
+      size: 100601791
+    - path: pipelines/src/evaluate.py
+      hash: md5
+      md5: 0b6d3789102273802e65d570587e6588
+      size: 3683
+    outs:
+    - path: data/processed/conf_matrix_mobilenet.pkl
+      hash: md5
+      md5: 3cecd5af8c5cfb35ba8e5f37caab7f88
+      size: 664
+    - path: data/processed/metrics_mobilenet.csv
+      hash: md5
+      md5: f4f1bf2e516a3cd90668ac9810590b46
+      size: 457

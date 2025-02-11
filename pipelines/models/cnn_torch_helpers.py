@@ -40,7 +40,7 @@ def accuracy_direct(model, data_loader, device='mps'):
     correct = 0
     total = 0
 
-    with torch.no_grad():  # No gradients required for evaluation
+    with torch.inference_mode():  # No gradients required for evaluation
         for xi, yi in data_loader:
             xi = xi.to(device=device, dtype=torch.float32)
             yi = yi.to(device=device, dtype=torch.long)

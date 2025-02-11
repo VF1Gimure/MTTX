@@ -5,10 +5,9 @@ import torch
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-from pipelines.models.modular_cnn import CustomCNN
+from pipelines.models.resnet18_classifier import ResNet18Classifier  # Import ResNet18 model
 from torch.utils.data import DataLoader, random_split
-
-from pipelines.models.modular_cnn import CustomCNN
+from pipelines.models.cnn_custom import CNN_custom
 from pipelines.utils.data_utils import TwoChannelDataset
 from pipelines.models.cnn_torch_helpers import train
 import time
@@ -16,6 +15,7 @@ import time
 # Load parameters from YAML
 with open("params.yaml", "r") as ymlfile:
     params = yaml.safe_load(ymlfile)
+
 
 if __name__ == "__main__":
     train_input_path = os.path.join(params["data"]["processed"], sys.argv[1])  # train_data_2channel.pt
@@ -33,13 +33,19 @@ if __name__ == "__main__":
     lr = 1e-4
 
     # Model Definition
-    model = CustomCNN(in_channels=2, channel1=32, channel2=64, out_features=8, img_size=(224, 224))
+    model = ResNet18Classifier()
+
+    for param in model.resnet.parameters():  # Freeze everything
+        param.requires_grad = False
+
+    for param in model.resnet.fc.parameters():  # Unfreeze classifier (fully connected layer)
+        param.requires_grad = True  # Freeze convolutional layers
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     # Train model
     start_time = time.time()
-    _, epochs_h = train(model, optimizer, train_loader, epochs, 'mps')
+    _, epochs_h = train(model, optimizer, train_loader, epochs, 'cpu')
     training_time = time.time() - start_time
 
     # Save trained model
