@@ -1,24 +1,36 @@
 import os
 import sys
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+from pipelines.utils.data_utils import load_data_image_folder
+from pipelines.utils import transform_tensor
+import yaml
 import pandas as pd
 import torch
-from torchvision import datasets, transforms
-from concurrent.futures import ThreadPoolExecutor
-from tqdm import tqdm
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-from pipelines.utils.transformers_setup import clahe_unsharp_t
-from pipelines.utils.data_utils import load_data_image_folder
-
+# Cargar parámetros desde params.yaml
+with open("params.yaml", "r") as ymlfile:
+    params = yaml.safe_load(ymlfile)
 
 if __name__ == "__main__":
-    data_path = sys.argv[1]
-    output_file = sys.argv[2]
+    processed_path = params["data"]["processed"]  # Ruta de datos procesados desde params.yaml
+    data_path = params["data"]["image_folder_path"]  # Ruta de imágenes desde params.yaml
+    mean_std_filename = sys.argv[1]  # Nombre del archivo mean_std.csv desde argumento del sistema
+    output_file = sys.argv[2]  # Ruta para guardar los datos procesados
+
+    # Construir ruta completa para mean_std.csv
+    mean_std_path = os.path.join(processed_path, mean_std_filename)
+
     num_workers = os.cpu_count()
 
-    default_transform = clahe_unsharp_t() #TODO: This needs to be LOADED
+    # Leer mean y std desde el archivo CSV
+    mean, std = pd.read_csv(mean_std_path, header=None).values
+    mean, std = torch.tensor(mean), torch.tensor(std)
 
-    loaded_data = load_data_image_folder(data_path, default_transform,num_workers)
+    # Aplicar transformación y cargar datos
+    default_transform = transform_tensor(mean, std)
+    loaded_data = load_data_image_folder(data_path, default_transform, num_workers)
 
-    torch.save(loaded_data, output_file)
+    # Guardar datos procesados
+    torch.save(loaded_data, os.path.join(processed_path, output_file))
+

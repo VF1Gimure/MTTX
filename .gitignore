@@ -2,6 +2,9 @@
 __pycache__/
 *.pyc
 
+data/processed/*
+!data/processed/*.dvc
+*utils/capture/__pycache__/
 *.py[cod]
 *$py.class
 *.dvc

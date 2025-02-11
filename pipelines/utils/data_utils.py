@@ -212,7 +212,7 @@ def filter_redundant_angles(filtered_boxes, face_angles, loaded_data, angle_simi
     for idx in filtered_boxes:
         label = loaded_data["labels"][loaded_data["idxs"].index(idx)]
         path = loaded_data["file_paths"][loaded_data["idxs"].index(idx)]
-        person_id = "timestamp" if "_#" in path and len(path.split("_#")[-1]) > 3 else "number"
+        person_id = path.split("_")[0]
         grouped_faces[label][person_id].append((idx, face_angles[idx]))
 
     # New filtered results

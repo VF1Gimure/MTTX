@@ -21,3 +21,211 @@ stages:
       hash: md5
       md5: 02f4978f91dd9622ba376ea752efe52f
       size: 940
+  load.compute_mean_std:
+    cmd: python pipelines/utils/compute_mean_std.py mean_std.csv
+    deps:
+    - path: data/raw/KnightX_exp_dataset
+      hash: md5
+      md5: c1b6a3f3f6d58c547ad5ef52d024d9b9.dir
+      size: 1011643113
+      nfiles: 4681
+    - path: pipelines/utils/compute_mean_std.py
+      hash: md5
+      md5: d80e00135933b998fec4ab253cbaed79
+      size: 703
+    outs:
+    - path: data/processed/mean_std.csv
+      hash: md5
+      md5: 6a939e13ec162214a35c86de3429ba4b
+      size: 117
+  load.train_data:
+    cmd: python pipelines/src/load_data.py mean_std.csv train_data.pt
+    deps:
+    - path: pipelines/src/load_data.py
+      hash: md5
+      md5: b90e1cb88d96b57325c52855377f4981
+      size: 1360
+    outs:
+    - path: data/processed/train_data.pt
+      hash: md5
+      md5: 9b32f7d5bacb0b5da62d9a804349ee25
+      size: 81438855030
+  preprocess.extract_boxes:
+    cmd: python pipelines/src/preprocess_extract_boxes.py train_data.pt mtcnn_boxes.pkl
+      mean_std.csv
+    deps:
+    - path: data/processed/mean_std.csv
+      hash: md5
+      md5: 6a939e13ec162214a35c86de3429ba4b
+      size: 117
+    - path: data/processed/train_data.pt
+      hash: md5
+      md5: 9b32f7d5bacb0b5da62d9a804349ee25
+      size: 81438855030
+    - path: pipelines/src/preprocess_extract_boxes.py
+      hash: md5
+      md5: d89ef829bdf4fa033b0f384550a58af5
+      size: 1379
+    outs:
+    - path: data/processed/mtcnn_boxes.pkl
+      hash: md5
+      md5: 88b00d21fadf5e02b0be51c860d1ecd3
+      size: 327509
+  preprocess.filter_faces:
+    cmd: python pipelines/src/preprocess_filter_faces.py mtcnn_boxes.pkl train_data.pt
+      filtered_boxes.pkl filtered_angles.pkl
+    deps:
+    - path: data/processed/mtcnn_boxes.pkl
+      hash: md5
+      md5: 88b00d21fadf5e02b0be51c860d1ecd3
+      size: 327509
+    - path: data/processed/train_data.pt
+      hash: md5
+      md5: 9b32f7d5bacb0b5da62d9a804349ee25
+      size: 81438855030
+    - path: pipelines/src/preprocess_filter_faces.py
+      hash: md5
+      md5: 1d32f089ff45119aee5ad529d6f84fdf
+      size: 1443
+    outs:
+    - path: data/processed/filtered_angles.pkl
+      hash: md5
+      md5: d1ceb09e7a1ba3004529a4c989821122
+      size: 55380
+    - path: data/processed/filtered_boxes.pkl
+      hash: md5
+      md5: c9ae3c70b720e98df904f6e1d32e872a
+      size: 176378
+  preprocess.refine_faces:
+    cmd: python pipelines/src/preprocess_filter_loaded_data.py train_data.pt filtered_boxes.pkl
+      filtered_angles.pkl train_data_filtered.pt
+    deps:
+    - path: data/processed/filtered_angles.pkl
+      hash: md5
+      md5: d1ceb09e7a1ba3004529a4c989821122
+      size: 55380
+    - path: data/processed/filtered_boxes.pkl
+      hash: md5
+      md5: c9ae3c70b720e98df904f6e1d32e872a
+      size: 176378
+    - path: data/processed/train_data.pt
+      hash: md5
+      md5: 9b32f7d5bacb0b5da62d9a804349ee25
+      size: 81438855030
+    - path: pipelines/src/preprocess_filter_loaded_data.py
+      hash: md5
+      md5: 4f84e50c1ca86b9d0ac0cdbfa9eb61d3
+      size: 1285
+    outs:
+    - path: data/processed/train_data_filtered.pt
+      hash: md5
+      md5: 74f86ec8f470625170545c81e906203b
+      size: 11463247366
+  preprocess.apply_clahe_unsharp:
+    cmd: python pipelines/src/preprocess_image.py train_data_filtered.pt train_data_clahe.pt
+      mean_std.csv
+    deps:
+    - path: data/processed/mean_std.csv
+      hash: md5
+      md5: 6a939e13ec162214a35c86de3429ba4b
+      size: 117
+    - path: data/processed/train_data_filtered.pt
+      hash: md5
+      md5: 74f86ec8f470625170545c81e906203b
+      size: 11463247366
+    - path: pipelines/src/preprocess_image.py
+      hash: md5
+      md5: af19cfaa5d7a5bf9734516e9a51c89b4
+      size: 1297
+    outs:
+    - path: data/processed/train_data_clahe.pt
+      hash: md5
+      md5: c4da83ba8b30a976dff4d08889bd4101
+      size: 3821328932
+  preprocess.extract_dlib_landmarks:
+    cmd: python pipelines/src/preprocess_image_landmarks.py train_data_clahe.pt train_data_landmarked.pt
+      mean_std.csv
+    deps:
+    - path: data/model/shape_predictor_68_face_landmarks.dat
+      hash: md5
+      md5: 73fde5e05226548677a050913eed4e04
+      size: 99693937
+    - path: data/processed/mean_std.csv
+      hash: md5
+      md5: 6a939e13ec162214a35c86de3429ba4b
+      size: 117
+    - path: data/processed/train_data_clahe.pt
+      hash: md5
+      md5: c4da83ba8b30a976dff4d08889bd4101
+      size: 3821328932
+    - path: pipelines/src/preprocess_image_landmarks.py
+      hash: md5
+      md5: 7131e7d8a0730180992c19aabbf690b8
+      size: 1217
+    outs:
+    - path: data/processed/train_data_landmarked.pt
+      hash: md5
+      md5: dd53a9eac0f2d89bb937cd701706f660
+      size: 3822071362
+  preprocess.crop_resize_convert:
+    cmd: python pipelines/src/preprocess.py train_data_landmarked.pt train_data_2channel_train.pt
+      train_data_2channel_test.pt
+    deps:
+    - path: data/processed/train_data_landmarked.pt
+      hash: md5
+      md5: dd53a9eac0f2d89bb937cd701706f660
+      size: 3822071362
+    - path: pipelines/src/preprocess.py
+      hash: md5
+      md5: c0032971e7f72fbdac3866cf87a0d459
+      size: 1994
+    outs:
+    - path: data/processed/train_data_2channel_test.pt
+      hash: md5
+      md5: f07a3a0f40a0cc14394447c7aab000c6
+      size: 350274303
+    - path: data/processed/train_data_2channel_train.pt
+      hash: md5
+      md5: 83e9b1d6b0ed96b4c90922a5786fe856
+      size: 1398999978
+  train:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt model.pth
+    deps:
+    - path: data/processed/train_data_2channel_train.pt
+      hash: md5
+      md5: 83e9b1d6b0ed96b4c90922a5786fe856
+      size: 1398999978
+    - path: pipelines/src/train.py
+      hash: md5
+      md5: 0e6a0bc872b6654d0c0624cbe1579c17
+      size: 1755
+    outs:
+    - path: data/model/runs/model.pth
+      hash: md5
+      md5: 5fe2a5650dca890ebe93a010dc26f2e6
+      size: 33826168
+  evaluate:
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt model.pth metrics.csv
+      conf_matrix.pkl
+    deps:
+    - path: data/model/runs/model.pth
+      hash: md5
+      md5: 5fe2a5650dca890ebe93a010dc26f2e6
+      size: 33826168
+    - path: data/processed/train_data_2channel_test.pt
+      hash: md5
+      md5: f07a3a0f40a0cc14394447c7aab000c6
+      size: 350274303
+    - path: pipelines/src/evaluate.py
+      hash: md5
+      md5: ea8fc7dc34cb40c853eede92c00609ab
+      size: 2867
+    outs:
+    - path: data/processed/conf_matrix.pkl
+      hash: md5
+      md5: c1211347e83ebb3c3b493275b26578df
+      size: 664
+    - path: data/processed/metrics.csv
+      hash: md5
+      md5: db5426b230cffd9f750788c01f47be79
+      size: 400

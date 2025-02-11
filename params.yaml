@@ -1,4 +1,6 @@
 data:
   image_folder_path: "data/raw/KnightX_exp_dataset"
-  processed: "data/processed/train_data.pt"
-  models: "data/models"
+  processed: "data/processed"
+  models: "data/model/runs"
+  mean_std_filename: "mean_std.csv"
+  dlib68: "data/model/shape_predictor_68_face_landmarks.dat"

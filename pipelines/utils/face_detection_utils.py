@@ -112,17 +112,16 @@ def tensor_to_numpy(img_tensor, mean, std):
     img_np = (img_np * 255).astype(np.uint8)  # Convert to uint8 (0-255)
     return img_np
 
-
 def skip_frames(images, frame_skip):
     if frame_skip <= 1:  # No skipping needed
         return images
 
-    # Sort images by frame number or timestamp
+    # Extract frame number from the new format "PersonID_Category_#framenumber"
     def extract_frame_number(path):
-        match = re.search(r'(\d+)', path)
-        return int(match.group(0)) if match else float('inf')  # Ensure we sort by number
+        match = re.search(r'#(\d+)', path)  # Look for # followed by digits
+        return int(match.group(1)) if match else float('inf')  # Extract the number after '#'
 
-    images_sorted = sorted(images, key=lambda x: extract_frame_number(x[2]))  # Sort by frame number
+    images_sorted = sorted(images, key=lambda x: extract_frame_number(x[2]))  # Sort by extracted frame number
 
     # Now skip frames correctly
     filtered_images = []
@@ -137,31 +136,29 @@ def skip_frames(images, frame_skip):
 
     return filtered_images
 
-
 def extract_mtcnn_box(detector, idx, tensor, mean, std):
-    """Extracts face bounding box and landmarks using MTCNN from a pre-loaded tensor."""
+    """Extracts face bounding box using MTCNN from a pre-loaded tensor."""
     # Denormalize tensor
     tensor_denorm = denormalize(tensor, mean, std)
 
     # Convert back to PIL image
     image_pil = to_pil_image(tensor_denorm)
 
-    # Detect face box and landmarks
-    boxes, _, landmarks = detector.detect(image_pil, landmarks=True)
+    # Detect face box
+    boxes, _ = detector.detect(image_pil)
 
-    if boxes is None or landmarks is None:
-        return (idx, None, None)  # No face detected
+    if boxes is None:
+        return idx, None  # No face detected
 
-    return (idx, boxes[0], landmarks[0])  # Store bounding box and landmarks
+    return idx, boxes[0]  # Store only bounding box
 
 
 def extract_mtcnn_boxes(detector, loaded_data, mean, std, num_workers=8, frame_skip=2):
     """
-    Extracts MTCNN bounding boxes and landmarks while skipping frames.
+    Extracts MTCNN bounding boxes while skipping frames.
 
     Returns:
         - filter_boxes_r (dict): {idx: box}
-        - filter_landmarks_r (dict): {idx: landmarks}
     """
     grouped_images = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
@@ -169,7 +166,7 @@ def extract_mtcnn_boxes(detector, loaded_data, mean, std, num_workers=8, frame_s
             loaded_data["idxs"], loaded_data["tensors"], loaded_data["labels"], loaded_data["file_paths"]
     ):
         size_key = tuple(tensor.shape[-2:])
-        person_id = "timestamp" if "_#" in path and len(path.split("_#")[-1]) > 3 else "number"
+        person_id = path.split("_")[0]
         grouped_images[label][person_id][size_key].append((idx, tensor, path))
 
     # **Prepare filtered images BEFORE processing**
@@ -186,18 +183,14 @@ def extract_mtcnn_boxes(detector, loaded_data, mean, std, num_workers=8, frame_s
         results = list(tqdm(
             executor.map(lambda entry: extract_mtcnn_box(detector, entry[0], entry[1], mean, std), filtered_images),
             total=total_images,
-            desc="Extracting MTCNN Boxes & Landmarks",
+            desc="Extracting MTCNN Boxes",
             dynamic_ncols=True
         ))
-    filter_boxes_r = {}
-    filter_landmarks_r = {}
-    for idx, box, landmarks in results:
-        if box is None or landmarks is None:
-            continue
-        filter_boxes_r[idx] = box
-        filter_landmarks_r[idx] = landmarks
 
-    return filter_boxes_r, filter_landmarks_r
+    filter_boxes_r = {idx: box for idx, box in results if box is not None}
+
+    return filter_boxes_r
+
 
 
 def image_similarity(img1_tensor, img2_tensor, mean, std):
@@ -243,7 +236,7 @@ def remove_similar_images(loaded_data, mean, std, threshold=0.9):
 
     for idx, (tensor, label, path) in enumerate(zip(tensors, labels, file_paths)):
         size_key = tuple(tensor.shape[-2:])  # (Height, Width)
-        person_id = "timestamp" if "_#" in path and len(path.split("_#")[-1]) > 3 else "number"
+        person_id = path.split("_")[0]
         grouped_images[label][person_id][size_key].append((idx, tensor, path))
 
     # Total images for tqdm progress bar

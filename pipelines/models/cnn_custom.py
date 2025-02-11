@@ -19,4 +19,6 @@ class CNN_custom(nn.Module):
     def forward(self, x):
         x = F.relu(self.bn2(self.conv2(
             F.relu(self.bn1(self.conv1(x))))))
+        #print("Shape after CNN block:", x.shape)  # Debug print
+
         return self.max_pool(x)

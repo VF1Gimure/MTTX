@@ -1,9 +1,90 @@
 stages:
-  load_data:
-    cmd: python pipelines/src/load_data.py ${data.image_folder_path} ${data.processed}
+  load.compute_mean_std:
+    cmd: python pipelines/utils/compute_mean_std.py ${data.mean_std_filename}
+    deps:
+      - pipelines/utils/compute_mean_std.py
+      - ${data.image_folder_path}
+    outs:
+      - ${data.processed}/${data.mean_std_filename}
+
+  load.train_data:
+    cmd: python pipelines/src/load_data.py ${data.mean_std_filename} train_data.pt
     deps:
       - pipelines/src/load_data.py
-      - data/raw
-      - pipelines/utils/transformers_setup.py
     outs:
-      - ${data.processed}
+      - ${data.processed}/train_data.pt
+
+  preprocess.extract_boxes:
+    cmd: python pipelines/src/preprocess_extract_boxes.py train_data.pt mtcnn_boxes.pkl ${data.mean_std_filename}
+    deps:
+      - pipelines/src/preprocess_extract_boxes.py
+      - ${data.processed}/train_data.pt
+      - ${data.processed}/${data.mean_std_filename}
+    outs:
+      - ${data.processed}/mtcnn_boxes.pkl
+
+  preprocess.filter_faces:
+    cmd: python pipelines/src/preprocess_filter_faces.py mtcnn_boxes.pkl train_data.pt filtered_boxes.pkl filtered_angles.pkl
+    deps:
+      - pipelines/src/preprocess_filter_faces.py
+      - ${data.processed}/mtcnn_boxes.pkl
+      - ${data.processed}/train_data.pt
+    outs:
+      - ${data.processed}/filtered_boxes.pkl
+      - ${data.processed}/filtered_angles.pkl
+
+  preprocess.refine_faces:
+    cmd: python pipelines/src/preprocess_filter_loaded_data.py train_data.pt filtered_boxes.pkl filtered_angles.pkl train_data_filtered.pt
+    deps:
+      - pipelines/src/preprocess_filter_loaded_data.py
+      - ${data.processed}/train_data.pt
+      - ${data.processed}/filtered_boxes.pkl
+      - ${data.processed}/filtered_angles.pkl
+    outs:
+      - ${data.processed}/train_data_filtered.pt
+
+  preprocess.apply_clahe_unsharp:
+    cmd: python pipelines/src/preprocess_image.py train_data_filtered.pt train_data_clahe.pt ${data.mean_std_filename}
+    deps:
+      - pipelines/src/preprocess_image.py
+      - ${data.processed}/train_data_filtered.pt
+      - ${data.processed}/${data.mean_std_filename}
+    outs:
+      - ${data.processed}/train_data_clahe.pt
+
+  preprocess.extract_dlib_landmarks:
+    cmd: python pipelines/src/preprocess_image_landmarks.py train_data_clahe.pt train_data_landmarked.pt ${data.mean_std_filename}
+    deps:
+      - pipelines/src/preprocess_image_landmarks.py
+      - ${data.processed}/train_data_clahe.pt
+      - ${data.processed}/${data.mean_std_filename}
+      - ${data.dlib68}
+    outs:
+      - ${data.processed}/train_data_landmarked.pt
+
+  preprocess.crop_resize_convert:
+    cmd: python pipelines/src/preprocess.py train_data_landmarked.pt train_data_2channel_train.pt train_data_2channel_test.pt
+    deps:
+      - pipelines/src/preprocess.py
+      - ${data.processed}/train_data_landmarked.pt
+    outs:
+      - ${data.processed}/train_data_2channel_train.pt
+      - ${data.processed}/train_data_2channel_test.pt
+
+  train:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt model.pth
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_2channel_train.pt
+    outs:
+      - ${data.models}/model.pth
+
+  evaluate:
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt model.pth metrics.csv conf_matrix.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.models}/model.pth
+    outs:
+      - ${data.processed}/metrics.csv
+      - ${data.processed}/conf_matrix.pkl
