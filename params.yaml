@@ -4,3 +4,60 @@ data:
   models: "data/model/runs"
   mean_std_filename: "mean_std.csv"
   dlib68: "data/model/shape_predictor_68_face_landmarks.dat"
+
+image:
+  size_x: 224
+  size_y: 224
+
+training:
+  epochs: 10
+  learning_rate: 1e-4
+  batch_size: 32
+  device_models_mps: ["custom_cnn", "mlp", "deep_capsule", "capsule", "dense"]
+  transfer_learning_models: ["efficientnet", "mobilenet", "resnet18", "vgg16", "vit"]
+
+models:
+  custom_cnn:
+    in_channels: 2
+    channel1: 32
+    channel2: 64
+    out_features: 8
+  mlp:
+    in_channels: 2
+    patch_size: 16
+    hidden_dim: 256
+    num_layers: 3
+    num_classes: 8
+  deep_capsule:
+    in_channels: 2
+    conv1_out: 32
+    conv2_out: 64
+    capsule_dim: 8
+    num_capsules: 32
+    num_classes: 8
+  capsule:
+    in_channels: 2
+    conv_out: 256
+    capsule_dim: 8
+    num_capsules: 32
+    num_classes: 8
+  dense:
+    in_channels: 2
+    growth_rate: 32
+    num_layers: 3
+    out_features: 8
+  efficientnet:
+    freeze: ["efficientnet.features"]
+    unfreeze: ["efficientnet.classifier"]
+  mobilenet:
+    freeze: ["mobilenet.features"]
+    unfreeze: ["mobilenet.classifier"]
+  resnet18:
+    freeze: ["resnet"]
+    unfreeze: ["resnet.fc"]
+  vgg16:
+    freeze: ["vgg.features"]
+    unfreeze: ["vgg.classifier"]
+  vit:
+    freeze: ["vit.encoder"]
+    unfreeze: ["vit.heads"]
