@@ -318,7 +318,7 @@ stages:
       md5: 4c3d35014881cc995e3b4c1733418223
       size: 9182266
   evaluate_vgg16:
-    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vgg16.pth metrics_vgg16.csv
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vgg16.pth metrics_vgg16.pkl
       conf_matrix_vgg16.pkl
     deps:
     - path: data/model/runs/vgg16.pth
@@ -331,17 +331,17 @@ stages:
       size: 100601791
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: 4e6af21ce5e2a56913fbd47a31cba516
-      size: 5931
+      md5: 41fc06d124e5754618854984b1fc7293
+      size: 5982
     outs:
     - path: data/processed/conf_matrix_vgg16.pkl
       hash: md5
       md5: 4826ee195f356bfed2beef14a8844076
       size: 664
-    - path: data/processed/metrics_vgg16.csv
+    - path: data/processed/metrics_vgg16.pkl
       hash: md5
-      md5: 2f0111d1a6deec3198b3842701472a4a
-      size: 456
+      md5: 60e81680b59fa24b9794d887c1ddd8c3
+      size: 1831
   evaluate_resnet:
     cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth
       metrics_resnet.csv conf_matrix_resnet.pkl
@@ -368,7 +368,7 @@ stages:
       md5: f4fe2bc6b18b5ea84741685060a24d1e
       size: 458
   evaluate_vit:
-    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vit.pth metrics_vit.csv
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vit.pth metrics_vit.pkl
       conf_matrix_vit.pkl
     deps:
     - path: data/model/runs/vit.pth
@@ -381,20 +381,20 @@ stages:
       size: 100601791
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: 4e6af21ce5e2a56913fbd47a31cba516
-      size: 5931
+      md5: 41fc06d124e5754618854984b1fc7293
+      size: 5982
     outs:
     - path: data/processed/conf_matrix_vit.pkl
       hash: md5
       md5: b74a424af025d541a06695a1d298b7b7
       size: 664
-    - path: data/processed/metrics_vit.csv
+    - path: data/processed/metrics_vit.pkl
       hash: md5
-      md5: 983ebdd13b22e08af63ebd3f2ba86ab4
-      size: 457
+      md5: 5214d3e9c134f38faf4b49242320e359
+      size: 1831
   evaluate_efficientnet:
     cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt efficientnet.pth
-      metrics_efficientnet.csv conf_matrix_efficientnet.pkl
+      metrics_efficientnet.pkl conf_matrix_efficientnet.pkl
     deps:
     - path: data/model/runs/efficientnet.pth
       hash: md5
@@ -406,20 +406,20 @@ stages:
       size: 100601791
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: 4e6af21ce5e2a56913fbd47a31cba516
-      size: 5931
+      md5: 41fc06d124e5754618854984b1fc7293
+      size: 5982
     outs:
     - path: data/processed/conf_matrix_efficientnet.pkl
       hash: md5
       md5: cdfcd6a4362733423238e84eb8a600a7
       size: 664
-    - path: data/processed/metrics_efficientnet.csv
+    - path: data/processed/metrics_efficientnet.pkl
       hash: md5
-      md5: bb95d03099bdddc897584343fc3dcb5a
-      size: 455
+      md5: bef36cd6ccbe157a83ad019f93285053
+      size: 1831
   evaluate_mobilenet:
     cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt mobilenet.pth
-      metrics_mobilenet.csv conf_matrix_mobilenet.pkl
+      metrics_mobilenet.pkl conf_matrix_mobilenet.pkl
     deps:
     - path: data/model/runs/mobilenet.pth
       hash: md5
@@ -431,17 +431,17 @@ stages:
       size: 100601791
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: 4e6af21ce5e2a56913fbd47a31cba516
-      size: 5931
+      md5: 41fc06d124e5754618854984b1fc7293
+      size: 5982
     outs:
     - path: data/processed/conf_matrix_mobilenet.pkl
       hash: md5
       md5: ba3fecb6aae54de5acc7937cee54a77b
       size: 664
-    - path: data/processed/metrics_mobilenet.csv
+    - path: data/processed/metrics_mobilenet.pkl
       hash: md5
-      md5: a4f10c7598807d0fd18a963b93954c78
-      size: 456
+      md5: 4fce668a800a7008bb801e72311dfbe8
+      size: 1831
   train_custom_cnn:
     cmd: python pipelines/src/train.py train_data_2channel_train.pt custom_cnn
     deps:
@@ -524,7 +524,7 @@ stages:
       size: 44801020
   evaluate_custom_cnn:
     cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt custom_cnn.pth
-      metrics_custom_cnn.csv conf_matrix_custom_cnn.pkl
+      metrics_custom_cnn.pkl conf_matrix_custom_cnn.pkl
     deps:
     - path: data/model/runs/custom_cnn.pth
       hash: md5
@@ -536,19 +536,19 @@ stages:
       size: 67084223
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: 4e6af21ce5e2a56913fbd47a31cba516
-      size: 5931
+      md5: 41fc06d124e5754618854984b1fc7293
+      size: 5982
     outs:
     - path: data/processed/conf_matrix_custom_cnn.pkl
       hash: md5
       md5: e685a3f30d50e9ff77de0334768c4f77
       size: 664
-    - path: data/processed/metrics_custom_cnn.csv
+    - path: data/processed/metrics_custom_cnn.pkl
       hash: md5
-      md5: 2cc677aaa892ac11da90efd7740d5099
-      size: 456
+      md5: c0f05795dd7c06ee39bb9123069adc16
+      size: 1831
   evaluate_mlp:
-    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt mlp.pth metrics_mlp.csv
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt mlp.pth metrics_mlp.pkl
       conf_matrix_mlp.pkl
     deps:
     - path: data/model/runs/mlp.pth
@@ -561,20 +561,20 @@ stages:
       size: 67084223
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: 4e6af21ce5e2a56913fbd47a31cba516
-      size: 5931
+      md5: 41fc06d124e5754618854984b1fc7293
+      size: 5982
     outs:
     - path: data/processed/conf_matrix_mlp.pkl
       hash: md5
       md5: 3203f9281db0dbec9a6fceedb06ce1df
       size: 664
-    - path: data/processed/metrics_mlp.csv
+    - path: data/processed/metrics_mlp.pkl
       hash: md5
-      md5: fdcc8d4c743e1f9145c7e40afbbc2cac
-      size: 458
+      md5: 3a8797df8af0ff7271e8f2637317167d
+      size: 1831
   evaluate_deep_capsule:
     cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt deep_capsule.pth
-      metrics_deep_capsule.csv conf_matrix_deep_capsule.pkl
+      metrics_deep_capsule.pkl conf_matrix_deep_capsule.pkl
     deps:
     - path: data/model/runs/deep_capsule.pth
       hash: md5
@@ -586,20 +586,20 @@ stages:
       size: 67084223
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: 4e6af21ce5e2a56913fbd47a31cba516
-      size: 5931
+      md5: 41fc06d124e5754618854984b1fc7293
+      size: 5982
     outs:
     - path: data/processed/conf_matrix_deep_capsule.pkl
       hash: md5
       md5: 3627dd0ec5abadfe19b842ac079af0bf
       size: 664
-    - path: data/processed/metrics_deep_capsule.csv
+    - path: data/processed/metrics_deep_capsule.pkl
       hash: md5
-      md5: c8eb7c53af94bbb24cfa976fc0e94380
-      size: 458
+      md5: e72016bc168cafaed6dcc646fc06e9b0
+      size: 1831
   evaluate_capsule:
     cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt capsule.pth
-      metrics_capsule.csv conf_matrix_capsule.pkl
+      metrics_capsule.pkl conf_matrix_capsule.pkl
     deps:
     - path: data/model/runs/capsule.pth
       hash: md5
@@ -611,20 +611,20 @@ stages:
       size: 67084223
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: 4e6af21ce5e2a56913fbd47a31cba516
-      size: 5931
+      md5: 41fc06d124e5754618854984b1fc7293
+      size: 5982
     outs:
     - path: data/processed/conf_matrix_capsule.pkl
       hash: md5
       md5: cb19c2c717cb53967ec4ed09cec73615
       size: 664
-    - path: data/processed/metrics_capsule.csv
+    - path: data/processed/metrics_capsule.pkl
       hash: md5
-      md5: 37d5975b589cb35f103bf11709e3393d
-      size: 457
+      md5: ba8672964ebab47885e7edf7d5cd4ac0
+      size: 1831
   evaluate_resnet18:
     cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth
-      metrics_resnet.csv conf_matrix_resnet.pkl
+      metrics_resnet.pkl conf_matrix_resnet.pkl
     deps:
     - path: data/model/runs/resnet18.pth
       hash: md5
@@ -636,14 +636,14 @@ stages:
       size: 100601791
     - path: pipelines/src/evaluate.py
       hash: md5
-      md5: 4e6af21ce5e2a56913fbd47a31cba516
-      size: 5931
+      md5: 41fc06d124e5754618854984b1fc7293
+      size: 5982
     outs:
     - path: data/processed/conf_matrix_resnet.pkl
       hash: md5
       md5: add2c4f5fb5110bace5177d4afa23fe4
       size: 664
-    - path: data/processed/metrics_resnet.csv
+    - path: data/processed/metrics_resnet.pkl
       hash: md5
-      md5: 4285c2725fc193321321bde0b1eb1853
-      size: 456
+      md5: 36a70fc521847a53cb808cb34bb07b43
+      size: 1831

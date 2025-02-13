@@ -34,7 +34,7 @@ with open("params.yaml", "r") as ymlfile:
 if __name__ == "__main__":
     test_input_path = os.path.join(params["data"]["processed"], sys.argv[1])  # test_data_2channel.pt
     model_input_path = os.path.join(params["data"]["models"], sys.argv[2])  # .pth
-    results_output_path = os.path.join(params["data"]["processed"], sys.argv[3])  # metrics.csv
+    results_output_path = os.path.join(params["data"]["processed"], sys.argv[3])  # metrics.pkl
     conf_matrix_output_path = os.path.join(params["data"]["processed"], sys.argv[4])  # conf_matrix.pkl
     model_name = sys.argv[2].replace(".pth", "")
 
@@ -125,8 +125,8 @@ if __name__ == "__main__":
     df_macro.loc["Training Time"] = training_time
     df_macro.loc["Inference Time"] = inference_time
     # Save metrics
-    df_macro.to_csv(results_output_path)
-
+    with open(results_output_path, "wb") as f:
+        pickle.dump((df_clases, df_macro), f)
     print("\n====== Per-Class Metrics ======")
     print(df_clases)
     print("\n====== Macro Metrics ======")

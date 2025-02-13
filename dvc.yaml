@@ -145,91 +145,91 @@ stages:
       - ${data.models}/vit.pth
 
   evaluate_custom_cnn:
-    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt custom_cnn.pth metrics_custom_cnn.csv conf_matrix_custom_cnn.pkl
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt custom_cnn.pth metrics_custom_cnn.pkl conf_matrix_custom_cnn.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_2channel_test.pt
       - ${data.models}/custom_cnn.pth
     outs:
-      - ${data.processed}/metrics_custom_cnn.csv
+      - ${data.processed}/metrics_custom_cnn.pkl
       - ${data.processed}/conf_matrix_custom_cnn.pkl
 
   evaluate_mlp:
-    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt mlp.pth metrics_mlp.csv conf_matrix_mlp.pkl
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt mlp.pth metrics_mlp.pkl conf_matrix_mlp.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_2channel_test.pt
       - ${data.models}/mlp.pth
     outs:
-      - ${data.processed}/metrics_mlp.csv
+      - ${data.processed}/metrics_mlp.pkl
       - ${data.processed}/conf_matrix_mlp.pkl
 
   evaluate_deep_capsule:
-    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt deep_capsule.pth metrics_deep_capsule.csv conf_matrix_deep_capsule.pkl
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt deep_capsule.pth metrics_deep_capsule.pkl conf_matrix_deep_capsule.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_2channel_test.pt
       - ${data.models}/deep_capsule.pth
     outs:
-      - ${data.processed}/metrics_deep_capsule.csv
+      - ${data.processed}/metrics_deep_capsule.pkl
       - ${data.processed}/conf_matrix_deep_capsule.pkl
 
   evaluate_capsule:
-    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt capsule.pth metrics_capsule.csv conf_matrix_capsule.pkl
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt capsule.pth metrics_capsule.pkl conf_matrix_capsule.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_2channel_test.pt
       - ${data.models}/capsule.pth
     outs:
-      - ${data.processed}/metrics_capsule.csv
+      - ${data.processed}/metrics_capsule.pkl
       - ${data.processed}/conf_matrix_capsule.pkl
 
   evaluate_vgg16:
-    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vgg16.pth metrics_vgg16.csv conf_matrix_vgg16.pkl
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vgg16.pth metrics_vgg16.pkl conf_matrix_vgg16.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_3channel_test.pt
       - ${data.models}/vgg16.pth
     outs:
-      - ${data.processed}/metrics_vgg16.csv
+      - ${data.processed}/metrics_vgg16.pkl
       - ${data.processed}/conf_matrix_vgg16.pkl
 
   evaluate_resnet18:
-    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth metrics_resnet.csv conf_matrix_resnet.pkl
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth metrics_resnet.pkl conf_matrix_resnet.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_3channel_test.pt
       - ${data.models}/resnet18.pth
     outs:
-      - ${data.processed}/metrics_resnet.csv
+      - ${data.processed}/metrics_resnet.pkl
       - ${data.processed}/conf_matrix_resnet.pkl
 
   evaluate_efficientnet:
-    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt efficientnet.pth metrics_efficientnet.csv conf_matrix_efficientnet.pkl
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt efficientnet.pth metrics_efficientnet.pkl conf_matrix_efficientnet.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_3channel_test.pt
       - ${data.models}/efficientnet.pth
     outs:
-      - ${data.processed}/metrics_efficientnet.csv
+      - ${data.processed}/metrics_efficientnet.pkl
       - ${data.processed}/conf_matrix_efficientnet.pkl
 
   evaluate_mobilenet:
-    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt mobilenet.pth metrics_mobilenet.csv conf_matrix_mobilenet.pkl
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt mobilenet.pth metrics_mobilenet.pkl conf_matrix_mobilenet.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_3channel_test.pt
       - ${data.models}/mobilenet.pth
     outs:
-      - ${data.processed}/metrics_mobilenet.csv
+      - ${data.processed}/metrics_mobilenet.pkl
       - ${data.processed}/conf_matrix_mobilenet.pkl
 
   evaluate_vit:
-    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vit.pth metrics_vit.csv conf_matrix_vit.pkl
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vit.pth metrics_vit.pkl conf_matrix_vit.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_3channel_test.pt
       - ${data.models}/vit.pth
     outs:
-      - ${data.processed}/metrics_vit.csv
+      - ${data.processed}/metrics_vit.pkl
       - ${data.processed}/conf_matrix_vit.pkl
