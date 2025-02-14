@@ -77,6 +77,9 @@ stages:
     deps:
       - pipelines/src/train.py
       - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.custom_cnn
+      - training.epochs
     outs:
       - ${data.models}/custom_cnn.pth
 
@@ -85,6 +88,9 @@ stages:
     deps:
       - pipelines/src/train.py
       - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.mlp
+      - training.epochs
     outs:
       - ${data.models}/mlp.pth
 
@@ -93,6 +99,9 @@ stages:
     deps:
       - pipelines/src/train.py
       - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.deep_capsule
+      - training.epochs
     outs:
       - ${data.models}/deep_capsule.pth
 
@@ -101,9 +110,31 @@ stages:
     deps:
       - pipelines/src/train.py
       - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.capsule
+      - training.epochs
     outs:
       - ${data.models}/capsule.pth
 
+  train_dense:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt dense
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.dense
+    outs:
+      - ${data.models}/dense.pth
+
+  train_densenet:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt densenet
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.densenet
+    outs:
+      - ${data.models}/densenet.pth
   train_vgg16:
     cmd: python pipelines/src/train.py train_data_3channel_train.pt vgg16
     deps:
@@ -150,6 +181,8 @@ stages:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_2channel_test.pt
       - ${data.models}/custom_cnn.pth
+    params:
+      - models.custom_cnn
     outs:
       - ${data.processed}/metrics_custom_cnn.pkl
       - ${data.processed}/conf_matrix_custom_cnn.pkl
@@ -160,6 +193,8 @@ stages:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_2channel_test.pt
       - ${data.models}/mlp.pth
+    params:
+      - models.mlp
     outs:
       - ${data.processed}/metrics_mlp.pkl
       - ${data.processed}/conf_matrix_mlp.pkl
@@ -170,6 +205,8 @@ stages:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_2channel_test.pt
       - ${data.models}/deep_capsule.pth
+    params:
+      - models.deep_capsule
     outs:
       - ${data.processed}/metrics_deep_capsule.pkl
       - ${data.processed}/conf_matrix_deep_capsule.pkl
@@ -180,9 +217,35 @@ stages:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_2channel_test.pt
       - ${data.models}/capsule.pth
+    params:
+      - models.capsule
     outs:
       - ${data.processed}/metrics_capsule.pkl
       - ${data.processed}/conf_matrix_capsule.pkl
+
+  evaluate_dense:
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt dense.pth metrics_dense.pkl conf_matrix_dense.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.models}/dense.pth
+    params:
+      - models.dense
+    outs:
+      - ${data.processed}/metrics_dense.pkl
+      - ${data.processed}/conf_matrix_dense.pkl
+
+  evaluate_densenet:
+    cmd: python pipelines/src/evaluate_dense_v2.py train_data_2channel_test.pt densenet.pth metrics_densenet.pkl conf_matrix_densenet.pkl
+    deps:
+      - pipelines/src/evaluate_dense_v2.py
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.models}/densenet.pth
+    params:
+      - models.densenet
+    outs:
+      - ${data.processed}/metrics_densenet.pkl
+      - ${data.processed}/conf_matrix_densenet.pkl
 
   evaluate_vgg16:
     cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vgg16.pth metrics_vgg16.pkl conf_matrix_vgg16.pkl

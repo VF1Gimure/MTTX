@@ -47,40 +47,7 @@ if __name__ == "__main__":
     # Determine model type from filename
     img_size = (params["image"]["size_x"], params["image"]["size_y"])
 
-    # Model selection
     model_dict = {
-        "custom_cnn": CustomCNN(
-            in_channels=params["models"]["custom_cnn"]["in_channels"],
-            channel1=params["models"]["custom_cnn"]["channel1"],
-            channel2=params["models"]["custom_cnn"]["channel2"],
-            out_features=params["models"]["custom_cnn"]["out_features"],
-            img_size=img_size
-        ),
-        "mlp": MLPMixer(
-            in_channels=params["models"]["mlp"]["in_channels"],
-            img_size=img_size[0],
-            num_classes=params["models"]["mlp"]["num_classes"],
-            patch_size=params["models"]["mlp"]["patch_size"],
-            hidden_dim=params["models"]["mlp"]["hidden_dim"],
-            num_layers=params["models"]["mlp"]["num_layers"]
-        ),
-        "deep_capsule": DeepCapsuleNet(
-            in_channels=params["models"]["deep_capsule"]["in_channels"],
-            conv1_out=params["models"]["deep_capsule"]["conv1_out"],
-            conv2_out=params["models"]["deep_capsule"]["conv2_out"],
-            capsule_dim=params["models"]["deep_capsule"]["capsule_dim"],
-            num_capsules=params["models"]["deep_capsule"]["num_capsules"],
-            num_classes=params["models"]["deep_capsule"]["num_classes"],
-            img_size=img_size
-        ),
-        "capsule": CustomCapsuleNet(
-            in_channels=params["models"]["capsule"]["in_channels"],
-            conv_out=params["models"]["capsule"]["conv_out"],
-            capsule_dim=params["models"]["capsule"]["capsule_dim"],
-            num_capsules=params["models"]["capsule"]["num_capsules"],
-            num_classes=params["models"]["capsule"]["num_classes"],
-            img_size=img_size
-        ),
         "dense": CustomDenseNet(
             in_channels=params["models"]["dense"]["in_channels"],
             growth_rate=params["models"]["dense"]["growth_rate"],
@@ -90,22 +57,19 @@ if __name__ == "__main__":
         ),
         "densenet": DenseNet(
             in_channels=params["models"]["dense"]["in_channels"],
-            growth_rate=params["models"]["dense"]["growth_rate"],
-            num_layers=params["models"]["dense"]["num_layers"],
+            growth_rate=24,
+            num_layers=12,
             out_features=params["models"]["dense"]["out_features"],
-            reduction=params["models"]["densenet"]["reduction"],
+            reduction=0.2,
             drop_rate=params["models"]["densenet"]["drop_rate"],
-        ),
-        "efficientnet": EfficientNetClassifier(),
-        "mobilenet": MobileNetClassifier(),
-        "resnet18": ResNet18Classifier(),
-        "vgg16": VGG16Classifier(),
-        "vit": ViTClassifier(),
+        )
     }
 
+    print(
+        f"Model: {model_name}, Growth Rate: {params['models'][model_name]['growth_rate']}, Num Layers: {params['models'][model_name]['num_layers']}")
+
     model = model_dict[model_name]
-    device = "mps" if model_name in ["custom_cnn", "mlp", "deep_capsule", "capsule","dense","DenseNet"] else "cpu"
-    # Load model state
+    device = "mps"
     model.load_state_dict(torch.load(model_input_path))
 
     start_time = time.time()

@@ -10,7 +10,7 @@ image:
   size_y: 224
 
 training:
-  epochs: 10
+  epochs: 15
   learning_rate: 1e-4
   batch_size: 32
   device_models_mps: ["custom_cnn", "mlp", "deep_capsule", "capsule", "dense"]
@@ -43,9 +43,18 @@ models:
     num_classes: 8
   dense:
     in_channels: 2
-    growth_rate: 32
-    num_layers: 3
+    growth_rate: 16
+    num_layers: 12
     out_features: 8
+    epochs: 30
+  densenet:
+    in_channels: 2
+    growth_rate: 24  # Slightly larger than `dense`
+    num_layers: 12  # More depth
+    out_features: 8
+    reduction: 0.2  # Standard DenseNet uses 0.5
+    drop_rate: 0.0
+    epochs: 30
   efficientnet:
     freeze: ["efficientnet.features"]
     unfreeze: ["efficientnet.classifier"]

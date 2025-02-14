@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"
 from torch.utils.data import DataLoader
 from pipelines.models.modular_cnn import CustomCNN
 from pipelines.models.capsule import CustomCapsuleNet, DeepCapsuleNet
-from pipelines.models.dense import CustomDenseNet
+from pipelines.models.dense import CustomDenseNet,DenseNet
 from pipelines.models.mlp import MLPMixer
 import time
 from pipelines.models.effinet_b0 import EfficientNetClassifier
@@ -33,9 +33,16 @@ if __name__ == "__main__":
     train_dataset = TwoChannelDataset(train_data)
     batch_size = params["training"]["batch_size"]
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    mps_models = {"custom_cnn", "mlp", "deep_capsule", "capsule", "dense", "densenet"}
+    cpu_models = {"efficientnet", "mobilenet", "resnet18", "vgg16", "vit"}
 
-    # Extract values
-    epochs = params["training"]["epochs"]
+    if model_name in mps_models:
+        epochs = params["models"][model_name]["epochs"] if model_name in {"dense", "densenet"} else params["training"][
+            "epochs"]
+    else:
+        epochs = 10
+
+
     lr = float(params["training"]["learning_rate"])
     img_size = (params["image"]["size_x"],params["image"]["size_y"])
     # Model selection
@@ -79,6 +86,14 @@ if __name__ == "__main__":
             out_features=params["models"]["dense"]["out_features"],
             img_size=img_size
         ),
+        "densenet": DenseNet(
+            in_channels=params["models"]["densenet"]["in_channels"],
+            growth_rate=params["models"]["densenet"]["growth_rate"],
+            num_layers=params["models"]["densenet"]["num_layers"],
+            out_features=params["models"]["densenet"]["out_features"],
+            reduction=params["models"]["densenet"]["reduction"],
+            drop_rate=params["models"]["densenet"]["drop_rate"],
+        ),
         "efficientnet": EfficientNetClassifier(),
         "mobilenet": MobileNetClassifier(),
         "resnet18": ResNet18Classifier(),
@@ -90,7 +105,7 @@ if __name__ == "__main__":
         raise ValueError(f"Invalid model name: {model_name}. Choose from {list(model_dict.keys())}")
 
     model = model_dict[model_name]
-    device = "mps" if model_name in ["custom_cnn", "mlp", "deep_capsule", "capsule","dense"] else "cpu"
+    device = "mps" if model_name in mps_models else "cpu"
     # Freeze layers for transfer learning models
 
     if model_name in ["efficientnet", "mobilenet", "resnet18", "vgg16", "vit"]:
