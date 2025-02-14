@@ -236,9 +236,9 @@ stages:
       - ${data.processed}/conf_matrix_dense.pkl
 
   evaluate_densenet:
-    cmd: python pipelines/src/evaluate_dense_v2.py train_data_2channel_test.pt densenet.pth metrics_densenet.pkl conf_matrix_densenet.pkl
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt densenet.pth metrics_densenet.pkl conf_matrix_densenet.pkl
     deps:
-      - pipelines/src/evaluate_dense_v2.py
+      - pipelines/src/evaluate.py
       - ${data.processed}/train_data_2channel_test.pt
       - ${data.models}/densenet.pth
     params:

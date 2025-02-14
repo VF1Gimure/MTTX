@@ -89,10 +89,10 @@ if __name__ == "__main__":
             img_size=img_size
         ),
         "densenet": DenseNet(
-            in_channels=params["models"]["dense"]["in_channels"],
-            growth_rate=params["models"]["dense"]["growth_rate"],
-            num_layers=params["models"]["dense"]["num_layers"],
-            out_features=params["models"]["dense"]["out_features"],
+            in_channels=params["models"]["densenet"]["in_channels"],
+            growth_rate=params["models"]["densenet"]["growth_rate"],
+            num_layers=params["models"]["densenet"]["num_layers"],
+            out_features=params["models"]["densenet"]["out_features"],
             reduction=params["models"]["densenet"]["reduction"],
             drop_rate=params["models"]["densenet"]["drop_rate"],
         ),
