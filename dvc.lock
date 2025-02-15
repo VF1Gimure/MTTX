@@ -692,7 +692,7 @@ stages:
       size: 1831
   evaluate_resnet18:
     cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth
-      metrics_resnet.pkl conf_matrix_resnet.pkl
+      metrics_resnet18.pkl conf_matrix_resnet18.pkl
     deps:
     - path: data/model/runs/resnet18.pth
       hash: md5
@@ -707,13 +707,13 @@ stages:
       md5: 0cfa9bd89ae4b8cf3794ae153d0145ec
       size: 6449
     outs:
-    - path: data/processed/conf_matrix_resnet.pkl
+    - path: data/processed/conf_matrix_resnet18.pkl
       hash: md5
       md5: 5c6e3878bdcfe461e1ae1c422edac5c3
       size: 664
-    - path: data/processed/metrics_resnet.pkl
+    - path: data/processed/metrics_resnet18.pkl
       hash: md5
-      md5: a3011e767624101551568d1ed0262be7
+      md5: 0e3b39ebc8ff6d9ba9c07ed47ce75806
       size: 1831
   train_dense:
     cmd: python pipelines/src/train.py train_data_2channel_train.pt dense

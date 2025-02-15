@@ -258,14 +258,14 @@ stages:
       - ${data.processed}/conf_matrix_vgg16.pkl
 
   evaluate_resnet18:
-    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth metrics_resnet.pkl conf_matrix_resnet.pkl
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth metrics_resnet18.pkl conf_matrix_resnet18.pkl
     deps:
       - pipelines/src/evaluate.py
       - ${data.processed}/train_data_3channel_test.pt
       - ${data.models}/resnet18.pth
     outs:
-      - ${data.processed}/metrics_resnet.pkl
-      - ${data.processed}/conf_matrix_resnet.pkl
+      - ${data.processed}/metrics_resnet18.pkl
+      - ${data.processed}/conf_matrix_resnet18.pkl
 
   evaluate_efficientnet:
     cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt efficientnet.pth metrics_efficientnet.pkl conf_matrix_efficientnet.pkl
