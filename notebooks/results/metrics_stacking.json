@@ -2,120 +2,120 @@
     "model_name": "stacking",
     "macro_metrics": {
         "Valor": {
-            "Recall (Sensitivity)": 0.9671875000000001,
-            "Miss Rate": 0.03281250000000001,
-            "Specificity (Selectivity)": 0.9957408833321595,
-            "Fallout": 0.00425911666784054,
-            "Precision": 0.9682329822954823,
-            "False Discovery Rate (FDR)": 0.03176701770451772,
-            "Negative Predictive Value (NPV)": 0.9958050667709192,
-            "False Omission Rate (FOR)": 0.00419493322908078,
-            "F1 Score": 0.9672798443831963,
-            "MCC": 0.9657827202737382
+            "Recall (Sensitivity)": 0.9883996212121212,
+            "Miss Rate": 0.011600378787878785,
+            "Specificity (Selectivity)": 0.9982919037403227,
+            "Fallout": 0.001708096259677272,
+            "Precision": 0.9873798076923077,
+            "False Discovery Rate (FDR)": 0.012620192307692304,
+            "Negative Predictive Value (NPV)": 0.9982462595045376,
+            "False Omission Rate (FOR)": 0.0017537404954623553,
+            "F1 Score": 0.9878134426847662,
+            "MCC": 0.9863130881094953
         }
     },
     "class_metrics": {
         "Recall (Sensitivity)": {
-            "angry": 0.85,
+            "angry": 1.0,
             "contempt": 1.0,
             "disgust": 0.9375,
             "fear": 1.0,
             "happy": 1.0,
             "neutral": 1.0,
-            "sad": 1.0,
-            "surprise": 0.95
+            "sad": 0.9696969696969697,
+            "surprise": 1.0
         },
         "Miss Rate": {
-            "angry": 0.15000000000000002,
+            "angry": 0.0,
             "contempt": 0.0,
             "disgust": 0.0625,
             "fear": 0.0,
             "happy": 0.0,
             "neutral": 0.0,
-            "sad": 0.0,
-            "surprise": 0.050000000000000044
+            "sad": 0.030303030303030276,
+            "surprise": 0.0
         },
         "Specificity (Selectivity)": {
-            "angry": 0.9931972789115646,
+            "angry": 1.0,
             "contempt": 1.0,
             "disgust": 0.9933774834437086,
-            "fear": 0.9931972789115646,
+            "fear": 1.0,
             "happy": 0.9929577464788732,
             "neutral": 1.0,
             "sad": 1.0,
-            "surprise": 0.9931972789115646
+            "surprise": 1.0
         },
         "Fallout": {
-            "angry": 0.006802721088435382,
+            "angry": 0.0,
             "contempt": 0.0,
             "disgust": 0.0066225165562914245,
-            "fear": 0.006802721088435382,
+            "fear": 0.0,
             "happy": 0.007042253521126751,
             "neutral": 0.0,
             "sad": 0.0,
-            "surprise": 0.006802721088435382
+            "surprise": 0.0
         },
         "Precision": {
-            "angry": 0.9444444444444444,
+            "angry": 1.0,
             "contempt": 1.0,
             "disgust": 0.9375,
-            "fear": 0.9523809523809523,
+            "fear": 1.0,
             "happy": 0.9615384615384616,
             "neutral": 1.0,
             "sad": 1.0,
-            "surprise": 0.95
+            "surprise": 1.0
         },
         "False Discovery Rate (FDR)": {
-            "angry": 0.05555555555555558,
+            "angry": 0.0,
             "contempt": 0.0,
             "disgust": 0.0625,
-            "fear": 0.04761904761904767,
+            "fear": 0.0,
             "happy": 0.038461538461538436,
             "neutral": 0.0,
             "sad": 0.0,
-            "surprise": 0.050000000000000044
+            "surprise": 0.0
         },
         "Negative Predictive Value (NPV)": {
-            "angry": 0.9798657718120806,
+            "angry": 1.0,
             "contempt": 1.0,
             "disgust": 0.9933774834437086,
             "fear": 1.0,
             "happy": 1.0,
             "neutral": 1.0,
-            "sad": 1.0,
-            "surprise": 0.9931972789115646
+            "sad": 0.9925925925925926,
+            "surprise": 1.0
         },
         "False Omission Rate (FOR)": {
-            "angry": 0.020134228187919434,
+            "angry": 0.0,
             "contempt": 0.0,
             "disgust": 0.0066225165562914245,
             "fear": 0.0,
             "happy": 0.0,
             "neutral": 0.0,
-            "sad": 0.0,
-            "surprise": 0.006802721088435382
+            "sad": 0.007407407407407418,
+            "surprise": 0.0
         },
         "F1 Score": {
-            "angry": 0.8947368421052632,
+            "angry": 1.0,
             "contempt": 1.0,
             "disgust": 0.9375,
-            "fear": 0.975609756097561,
+            "fear": 1.0,
             "happy": 0.9803921568627451,
             "neutral": 1.0,
-            "sad": 1.0,
-            "surprise": 0.9500000000000001
+            "sad": 0.9846153846153847,
+            "surprise": 1.0
         }
     },
     "confusion_matrix": [
         [
-            17,
-            0,
-            1,
-            1,
+            20,
             0,
             0,
             0,
-            1
+            0,
+            0,
+            0,
+            0
         ],
         [
             0,
@@ -170,22 +170,22 @@
         [
             0,
             0,
-            0,
-            0,
-            0,
-            0,
-            33,
-            0
-        ],
-        [
             1,
             0,
             0,
             0,
+            32,
+            0
+        ],
+        [
             0,
             0,
             0,
-            19
+            0,
+            0,
+            0,
+            0,
+            20
         ]
     ],
     "base_models": [
