@@ -1,0 +1,195 @@
+{
+    "model_name": "stacking",
+    "macro_metrics": {
+        "Valor": {
+            "Recall (Sensitivity)": 0.9671875000000001,
+            "Miss Rate": 0.03281250000000001,
+            "Specificity (Selectivity)": 0.9957408833321595,
+            "Fallout": 0.00425911666784054,
+            "Precision": 0.9682329822954823,
+            "False Discovery Rate (FDR)": 0.03176701770451772,
+            "Negative Predictive Value (NPV)": 0.9958050667709192,
+            "False Omission Rate (FOR)": 0.00419493322908078,
+            "F1 Score": 0.9672798443831963,
+            "MCC": 0.9657827202737382
+        }
+    },
+    "class_metrics": {
+        "Recall (Sensitivity)": {
+            "angry": 0.85,
+            "contempt": 1.0,
+            "disgust": 0.9375,
+            "fear": 1.0,
+            "happy": 1.0,
+            "neutral": 1.0,
+            "sad": 1.0,
+            "surprise": 0.95
+        },
+        "Miss Rate": {
+            "angry": 0.15000000000000002,
+            "contempt": 0.0,
+            "disgust": 0.0625,
+            "fear": 0.0,
+            "happy": 0.0,
+            "neutral": 0.0,
+            "sad": 0.0,
+            "surprise": 0.050000000000000044
+        },
+        "Specificity (Selectivity)": {
+            "angry": 0.9931972789115646,
+            "contempt": 1.0,
+            "disgust": 0.9933774834437086,
+            "fear": 0.9931972789115646,
+            "happy": 0.9929577464788732,
+            "neutral": 1.0,
+            "sad": 1.0,
+            "surprise": 0.9931972789115646
+        },
+        "Fallout": {
+            "angry": 0.006802721088435382,
+            "contempt": 0.0,
+            "disgust": 0.0066225165562914245,
+            "fear": 0.006802721088435382,
+            "happy": 0.007042253521126751,
+            "neutral": 0.0,
+            "sad": 0.0,
+            "surprise": 0.006802721088435382
+        },
+        "Precision": {
+            "angry": 0.9444444444444444,
+            "contempt": 1.0,
+            "disgust": 0.9375,
+            "fear": 0.9523809523809523,
+            "happy": 0.9615384615384616,
+            "neutral": 1.0,
+            "sad": 1.0,
+            "surprise": 0.95
+        },
+        "False Discovery Rate (FDR)": {
+            "angry": 0.05555555555555558,
+            "contempt": 0.0,
+            "disgust": 0.0625,
+            "fear": 0.04761904761904767,
+            "happy": 0.038461538461538436,
+            "neutral": 0.0,
+            "sad": 0.0,
+            "surprise": 0.050000000000000044
+        },
+        "Negative Predictive Value (NPV)": {
+            "angry": 0.9798657718120806,
+            "contempt": 1.0,
+            "disgust": 0.9933774834437086,
+            "fear": 1.0,
+            "happy": 1.0,
+            "neutral": 1.0,
+            "sad": 1.0,
+            "surprise": 0.9931972789115646
+        },
+        "False Omission Rate (FOR)": {
+            "angry": 0.020134228187919434,
+            "contempt": 0.0,
+            "disgust": 0.0066225165562914245,
+            "fear": 0.0,
+            "happy": 0.0,
+            "neutral": 0.0,
+            "sad": 0.0,
+            "surprise": 0.006802721088435382
+        },
+        "F1 Score": {
+            "angry": 0.8947368421052632,
+            "contempt": 1.0,
+            "disgust": 0.9375,
+            "fear": 0.975609756097561,
+            "happy": 0.9803921568627451,
+            "neutral": 1.0,
+            "sad": 1.0,
+            "surprise": 0.9500000000000001
+        }
+    },
+    "confusion_matrix": [
+        [
+            17,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            1
+        ],
+        [
+            0,
+            17,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            15,
+            0,
+            1,
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0,
+            20,
+            0,
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0,
+            0,
+            25,
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0,
+            0,
+            0,
+            16,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            33,
+            0
+        ],
+        [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            19
+        ]
+    ],
+    "base_models": [
+        "MLP_h",
+        "CNN_h"
+    ]
+}

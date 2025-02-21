@@ -1,0 +1,14 @@
+{
+    "patch_size": 32,
+    "hidden_dim": 256,
+    "num_layers": 5,
+    "expansion_factor": 4,
+    "learning_rate": 0.0003509456588467593,
+    "weight_decay": 0.0003999683284657429,
+    "optimizer": "Adam",
+    "activation": "gelu",
+    "dropout": 0.0,
+    "step_size": 10,
+    "gamma": 0.1,
+    "epochs": 30
+}

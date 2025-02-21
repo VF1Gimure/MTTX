@@ -57,7 +57,7 @@ def accuracy_direct(model, data_loader, device='mps'):
     return accuracy
 
 
-def train(model, optimizer, train_loader, epochs=10, device='mps'):
+def train(model, optimizer, train_loader, epochs=10, device='mps', scheduler=None):
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     """
@@ -96,6 +96,96 @@ def train(model, optimizer, train_loader, epochs=10, device='mps'):
                 tepoch.set_postfix(loss=running_loss / len(train_loader))
 
         #  epoch info
-        print(f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader):.4f}')
+        #print(f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader):.4f}')
+        if scheduler is not None:
+            scheduler.step()
 
     return model, epochs
+
+
+
+
+def train(model, optimizer, train_loader, epochs=10, device='mps', scheduler=None):
+    if device is None:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    """
+    Trains the given model using the train loader data in the epochs specified.
+    Prints the cost and accuracy of the model at each epoch.
+    """
+
+    model = model.to(device=device)
+    model.train()
+
+    for epoch in range(epochs):
+
+        running_loss = 0.0
+
+        with tqdm(train_loader, unit="batch") as tepoch:
+            for xi, yi in tepoch:
+                xi = xi.to(device=device, dtype=torch.float32)
+                yi = yi.to(device=device, dtype=torch.long)
+
+                # Forward pass
+                scores = model(xi)
+
+                # Compute the cross-entropy loss
+                cost = F.cross_entropy(input=scores, target=yi)
+
+                # Zero gradients, backward pass, and optimization
+                optimizer.zero_grad()
+                cost.backward()
+                optimizer.step()
+
+                #  running loss
+                running_loss += cost.item()
+
+                # Update progress bar
+                tepoch.set_description(f"Epoch {epoch + 1}/{epochs}")
+                tepoch.set_postfix(loss=running_loss / len(train_loader))
+
+        #  epoch info
+        #print(f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader):.4f}')
+        if scheduler is not None:
+            scheduler.step()
+
+    return model, epochs
+
+
+def train_by_ep(model, optimizer, train_loader, epochs=10, device='mps', scheduler=None):
+    if device is None:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    model = model.to(device=device)
+    model.train()
+
+    with tqdm(range(epochs), unit="epoch") as pbar:
+        for epoch in pbar:
+            running_loss = 0.0
+
+            for xi, yi in train_loader:
+                xi = xi.to(device=device, dtype=torch.float32)
+                yi = yi.to(device=device, dtype=torch.long)
+
+                # Forward pass
+                scores = model(xi)
+
+                # Compute the cross-entropy loss
+                cost = F.cross_entropy(input=scores, target=yi)
+
+                # Zero gradients, backward pass, and optimization
+                optimizer.zero_grad()
+                cost.backward()
+                optimizer.step()
+
+                # Running loss
+                running_loss += cost.item()
+
+            avg_loss = running_loss / len(train_loader)
+            pbar.set_description(f"Epoch {epoch + 1}/{epochs}")
+            pbar.set_postfix(loss=avg_loss)
+
+            if scheduler is not None:
+                scheduler.step()
+
+    return model, epochs
+

@@ -1,0 +1,10 @@
+{
+    "learning_rate": 0.0025528487768926543,
+    "weight_decay": 0.00014631362388707416,
+    "optimizer": "AdamW",
+    "step_size": 10,
+    "gamma": 0.5,
+    "channel1": 128,
+    "channel2": 128,
+    "epochs": 15
+}
