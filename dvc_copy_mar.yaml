@@ -1,0 +1,298 @@
+stages:
+  load.compute_mean_std:
+    cmd: python pipelines/utils/compute_mean_std.py ${data.mean_std_filename}
+    deps:
+      - pipelines/utils/compute_mean_std.py
+      - ${data.image_folder_path}
+    outs:
+      - ${data.processed}/${data.mean_std_filename}
+
+  load.train_data:
+    cmd: python pipelines/src/load_data.py ${data.mean_std_filename} train_data.pt
+    deps:
+      - pipelines/src/load_data.py
+    outs:
+      - ${data.processed}/train_data.pt
+
+  preprocess.extract_boxes:
+    cmd: python pipelines/src/preprocess_extract_boxes.py train_data.pt mtcnn_boxes.pkl ${data.mean_std_filename}
+    deps:
+      - pipelines/src/preprocess_extract_boxes.py
+      - ${data.processed}/train_data.pt
+      - ${data.processed}/${data.mean_std_filename}
+    outs:
+      - ${data.processed}/mtcnn_boxes.pkl
+
+  preprocess.filter_faces:
+    cmd: python pipelines/src/preprocess_filter_faces.py mtcnn_boxes.pkl train_data.pt filtered_boxes.pkl filtered_angles.pkl
+    deps:
+      - pipelines/src/preprocess_filter_faces.py
+      - ${data.processed}/mtcnn_boxes.pkl
+      - ${data.processed}/train_data.pt
+    outs:
+      - ${data.processed}/filtered_boxes.pkl
+      - ${data.processed}/filtered_angles.pkl
+
+  preprocess.refine_faces:
+    cmd: python pipelines/src/preprocess_filter_loaded_data.py train_data.pt filtered_boxes.pkl filtered_angles.pkl train_data_filtered.pt
+    deps:
+      - pipelines/src/preprocess_filter_loaded_data.py
+      - ${data.processed}/train_data.pt
+      - ${data.processed}/filtered_boxes.pkl
+      - ${data.processed}/filtered_angles.pkl
+    outs:
+      - ${data.processed}/train_data_filtered.pt
+
+  preprocess.apply_clahe_unsharp:
+    cmd: python pipelines/src/preprocess_image.py train_data_filtered.pt train_data_clahe.pt ${data.mean_std_filename}
+    deps:
+      - pipelines/src/preprocess_image.py
+      - ${data.processed}/train_data_filtered.pt
+      - ${data.processed}/${data.mean_std_filename}
+    outs:
+      - ${data.processed}/train_data_clahe.pt
+
+  preprocess.extract_dlib_landmarks:
+    cmd: python pipelines/src/preprocess_image_landmarks.py train_data_clahe.pt train_data_landmarked.pt ${data.mean_std_filename}
+    deps:
+      - pipelines/src/preprocess_image_landmarks.py
+      - ${data.processed}/train_data_clahe.pt
+      - ${data.processed}/${data.mean_std_filename}
+      - ${data.dlib68}
+    outs:
+      - ${data.processed}/train_data_landmarked.pt
+  preprocess.crop_resize_convert:
+    cmd: python pipelines/src/preprocess.py train_data_landmarked.pt train_data_2channel_train.pt train_data_2channel_test.pt train_data_3channel_train.pt train_data_3channel_test.pt
+    deps:
+      - pipelines/src/preprocess.py
+      - ${data.processed}/train_data_landmarked.pt
+    outs:
+      - ${data.processed}/train_data_2channel_train.pt
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.processed}/train_data_3channel_train.pt
+      - ${data.processed}/train_data_3channel_test.pt
+
+  train_custom_cnn:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt custom_cnn
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.custom_cnn
+      - training.epochs
+    outs:
+      - ${data.models}/custom_cnn.pth
+
+  train_mlp:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt mlp
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.mlp
+      - training.epochs
+    outs:
+      - ${data.models}/mlp.pth
+
+  train_deep_capsule:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt deep_capsule
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.deep_capsule
+      - training.epochs
+    outs:
+      - ${data.models}/deep_capsule.pth
+
+  train_capsule:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt capsule
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.capsule
+      - training.epochs
+    outs:
+      - ${data.models}/capsule.pth
+
+  train_dense:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt dense
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.dense
+    outs:
+      - ${data.models}/dense.pth
+
+  train_densenet:
+    cmd: python pipelines/src/train.py train_data_2channel_train.pt densenet
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_2channel_train.pt
+    params:
+      - models.densenet
+    outs:
+      - ${data.models}/densenet.pth
+  train_vgg16:
+    cmd: python pipelines/src/train.py train_data_3channel_train.pt vgg16
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/vgg16.pth
+
+  train_resnet18:
+    cmd: python pipelines/src/train.py train_data_3channel_train.pt resnet18
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/resnet18.pth
+
+  train_efficientnet:
+    cmd: python pipelines/src/train.py train_data_3channel_train.pt efficientnet
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/efficientnet.pth
+
+  train_mobilenet:
+    cmd: python pipelines/src/train.py train_data_3channel_train.pt mobilenet
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/mobilenet.pth
+
+  train_vit:
+    cmd: python pipelines/src/train.py train_data_3channel_train.pt vit vit.pth
+    deps:
+      - pipelines/src/train.py
+      - ${data.processed}/train_data_3channel_train.pt
+    outs:
+      - ${data.models}/vit.pth
+
+  evaluate_custom_cnn:
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt custom_cnn.pth metrics_custom_cnn.pkl conf_matrix_custom_cnn.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.models}/custom_cnn.pth
+    params:
+      - models.custom_cnn
+    outs:
+      - ${data.processed}/metrics_custom_cnn.pkl
+      - ${data.processed}/conf_matrix_custom_cnn.pkl
+
+  evaluate_mlp:
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt mlp.pth metrics_mlp.pkl conf_matrix_mlp.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.models}/mlp.pth
+    params:
+      - models.mlp
+    outs:
+      - ${data.processed}/metrics_mlp.pkl
+      - ${data.processed}/conf_matrix_mlp.pkl
+
+  evaluate_deep_capsule:
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt deep_capsule.pth metrics_deep_capsule.pkl conf_matrix_deep_capsule.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.models}/deep_capsule.pth
+    params:
+      - models.deep_capsule
+    outs:
+      - ${data.processed}/metrics_deep_capsule.pkl
+      - ${data.processed}/conf_matrix_deep_capsule.pkl
+
+  evaluate_capsule:
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt capsule.pth metrics_capsule.pkl conf_matrix_capsule.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.models}/capsule.pth
+    params:
+      - models.capsule
+    outs:
+      - ${data.processed}/metrics_capsule.pkl
+      - ${data.processed}/conf_matrix_capsule.pkl
+
+  evaluate_dense:
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt dense.pth metrics_dense.pkl conf_matrix_dense.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.models}/dense.pth
+    params:
+      - models.dense
+    outs:
+      - ${data.processed}/metrics_dense.pkl
+      - ${data.processed}/conf_matrix_dense.pkl
+
+  evaluate_densenet:
+    cmd: python pipelines/src/evaluate.py train_data_2channel_test.pt densenet.pth metrics_densenet.pkl conf_matrix_densenet.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_2channel_test.pt
+      - ${data.models}/densenet.pth
+    params:
+      - models.densenet
+    outs:
+      - ${data.processed}/metrics_densenet.pkl
+      - ${data.processed}/conf_matrix_densenet.pkl
+
+  evaluate_vgg16:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vgg16.pth metrics_vgg16.pkl conf_matrix_vgg16.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/vgg16.pth
+    outs:
+      - ${data.processed}/metrics_vgg16.pkl
+      - ${data.processed}/conf_matrix_vgg16.pkl
+
+  evaluate_resnet18:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt resnet18.pth metrics_resnet18.pkl conf_matrix_resnet18.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/resnet18.pth
+    outs:
+      - ${data.processed}/metrics_resnet18.pkl
+      - ${data.processed}/conf_matrix_resnet18.pkl
+
+  evaluate_efficientnet:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt efficientnet.pth metrics_efficientnet.pkl conf_matrix_efficientnet.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/efficientnet.pth
+    outs:
+      - ${data.processed}/metrics_efficientnet.pkl
+      - ${data.processed}/conf_matrix_efficientnet.pkl
+
+  evaluate_mobilenet:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt mobilenet.pth metrics_mobilenet.pkl conf_matrix_mobilenet.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/mobilenet.pth
+    outs:
+      - ${data.processed}/metrics_mobilenet.pkl
+      - ${data.processed}/conf_matrix_mobilenet.pkl
+
+  evaluate_vit:
+    cmd: python pipelines/src/evaluate.py train_data_3channel_test.pt vit.pth metrics_vit.pkl conf_matrix_vit.pkl
+    deps:
+      - pipelines/src/evaluate.py
+      - ${data.processed}/train_data_3channel_test.pt
+      - ${data.models}/vit.pth
+    outs:
+      - ${data.processed}/metrics_vit.pkl
+      - ${data.processed}/conf_matrix_vit.pkl
